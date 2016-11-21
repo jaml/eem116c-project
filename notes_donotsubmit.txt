@@ -1,6 +1,0 @@
-(Do not submit this file, this is for reference only)
-
-Command I ran for Part 2.1:
-  xmem -l -j1 -f part2q1-run1.csv > part2q1-run1out.txt
-(replace run1 with number of run. I ran this 5 times in a VM)
-
