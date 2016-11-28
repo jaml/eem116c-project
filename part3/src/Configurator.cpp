@@ -1,7 +1,7 @@
 /* The MIT License (MIT)
  *
  * Copyright (c) 2014 Microsoft
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -25,7 +25,7 @@
 
 /**
  * @file
- * 
+ *
  * @brief Implementation file for the Configurator class and some helper data structures.
  */
 
@@ -135,7 +135,7 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
         std::cerr << "ERROR: Unknown option: " << std::string(unknown_opt->name, unknown_opt->namelen) << std::endl;
         goto error;
     }
-    
+
     //Verbosity
     if (options[VERBOSE]) {
         verbose_ = true; //What the user configuration is.
@@ -148,7 +148,7 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
         run_throughput_ = false;
         run_extensions_ = false;
     }
-    
+
     if (options[MEAS_LATENCY])
         run_latency_ = true;
 
@@ -163,7 +163,7 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
         }
 
         run_extensions_ = true;
-        
+
         //Init... override default values
 #ifdef EXT_DELAY_INJECTED_LATENCY_BENCHMARK
         run_ext_delay_injected_loaded_latency_benchmark_ = false;
@@ -171,7 +171,7 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
 #ifdef EXT_STREAM_BENCHMARK
         run_ext_stream_benchmark_ = false;
 #endif
-        
+
         Option* curr = options[EXTENSION];
         while (curr) { //EXTENSION may occur more than once, this is perfectly OK.
             char* endptr = NULL;
@@ -189,7 +189,7 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
 #endif
                 default:
                     //If no extensions are enabled, then we should not have reached this point anyway.
-                    std::cerr << "ERROR: Invalid extension number " << ext_num << ". Allowed values: " << std::endl 
+                    std::cerr << "ERROR: Invalid extension number " << ext_num << ". Allowed values: " << std::endl
 #ifdef EXT_DELAY_INJECTED_LOADED_LATENCY_BENCHMARK
                     << "---> Delay-injected latency benchmark: " << EXT_NUM_DELAY_INJECTED_LOADED_LATENCY_BENCHMARK
 #endif
@@ -202,22 +202,22 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
             curr = curr->next();
         }
     }
-    
+
     //Check working set size
     if (options[WORKING_SET_SIZE_PER_THREAD]) { //Override default value with user-specified value
         if (!check_single_option_occurrence(&options[WORKING_SET_SIZE_PER_THREAD]))
             goto error;
 
         char* endptr = NULL;
-        size_t working_set_size_KB = strtoul(options[WORKING_SET_SIZE_PER_THREAD].arg, &endptr, 10);    
+        size_t working_set_size_KB = strtoul(options[WORKING_SET_SIZE_PER_THREAD].arg, &endptr, 10);
         if ((working_set_size_KB % 4) != 0) {
-            std::cerr << "ERROR: Working set size must be specified in KB and be a multiple of 4 KB." << std::endl; 
+            std::cerr << "ERROR: Working set size must be specified in KB and be a multiple of 4 KB." << std::endl;
             goto error;
         }
 
         working_set_size_per_thread_ = working_set_size_KB * KB; //convert to bytes
     }
-    
+
     //Check NUMA selection
 #ifndef HAS_NUMA
     numa_enabled_ = false;
@@ -234,7 +234,7 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
         memory_numa_node_affinities_.push_back(0);
 #endif
     }
-  
+
     if (options[CPU_NUMA_NODE_AFFINITY]) {
         if (!numa_enabled_)
             std::cerr << "WARNING: NUMA is disabled, so you cannot specify CPU NUMA node affinity directly. Overriding to only use node 0 for CPU affinity." << std::endl;
@@ -247,7 +247,7 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
                     std::cerr << "ERROR: CPU NUMA node affinity of " << cpu_numa_node_affinity << " is not supported. There are only " << g_num_numa_nodes << " nodes in this system." << std::endl;
                     goto error;
                 }
-                
+
                 bool found = false;
                 for (auto it = cpu_numa_node_affinities_.cbegin(); it != cpu_numa_node_affinities_.cend(); it++) {
                     if (*it == cpu_numa_node_affinity)
@@ -267,7 +267,7 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
         for (uint32_t i = 0; i < g_num_numa_nodes; i++)
             cpu_numa_node_affinities_.push_back(i);
     }
-    
+
     if (options[MEMORY_NUMA_NODE_AFFINITY]) {
         if (!numa_enabled_)
             std::cerr << "WARNING: NUMA is disabled, so you cannot specify memory NUMA node affinity directly. Overriding to only use node 0 for memory affinity." << std::endl;
@@ -280,7 +280,7 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
                     std::cerr << "ERROR: memory NUMA node affinity of " << memory_numa_node_affinity << " is not supported. There are only " << g_num_numa_nodes << " nodes in this system." << std::endl;
                     goto error;
                 }
-                
+
                 bool found = false;
                 for (auto it = memory_numa_node_affinities_.cbegin(); it != memory_numa_node_affinities_.cend(); it++) {
                     if (*it == memory_numa_node_affinity)
@@ -300,7 +300,7 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
         for (uint32_t i = 0; i < g_num_numa_nodes; i++)
             memory_numa_node_affinities_.push_back(i);
     }
-    
+
     //Check if large pages should be used for allocation of memory under test.
     if (options[USE_LARGE_PAGES]) {
 #if defined(__gnu_linux__) && defined(ARCH_INTEL)
@@ -328,7 +328,7 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
             goto error;
         }
     }
-    
+
     //Check chunk sizes
     if (options[CHUNK_SIZE]) {
         //Init... override default values
@@ -345,7 +345,7 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
 #ifdef HAS_WORD_512
         use_chunk_512b = false;
 #endif
-        
+
         Option* curr = options[CHUNK_SIZE];
         while (curr) { //CHUNK_SIZE may occur more than once, this is perfectly OK.
             char* endptr = NULL;
@@ -360,7 +360,7 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
                     break;
 #endif
 #ifdef HAS_WORD_128
-                case 128: 
+                case 128:
                     use_chunk_128b_ = true;
                     break;
 #endif
@@ -412,7 +412,7 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
 
     if (options[RANDOM_ACCESS_PATTERN])
         use_random_access_pattern_ = true;
-    
+
     if (options[SEQUENTIAL_ACCESS_PATTERN])
         use_sequential_access_pattern_ = true;
 
@@ -460,7 +460,7 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
         use_stride_n8_ = false;
         use_stride_p16_ = false;
         use_stride_n16_ = false;
-        
+
         Option* curr = options[STRIDE_SIZE];
         while (curr) { //STRIDE_SIZE may occur more than once, this is perfectly OK.
             char* endptr = NULL;
@@ -505,21 +505,56 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
         }
     }
 
+    // Check MLP selection
+    if (options[MLP]) { // override default of 1
+        // Followed the same option parsing style as for STRIDE_SIZE.
+        char* endptr = NULL;
+        int32_t mlp = static_cast<int32_t>(strtoul(options[MLP].arg, &endptr, 10));
+
+        switch(mlp) {
+            case 1:
+                use_mlp_1_ = true;
+                break;
+            case 2:
+                use_mlp_2_ = true;
+                break;
+            case 4:
+                use_mlp_4_ = true;
+                break;
+            case 6:
+                use_mlp_6_ = true;
+                break;
+            case 8:
+                use_mlp_8_ = true;
+                break;
+            case 16:
+                use_mlp_16_ = true;
+                break;
+            case 32:
+                use_mlp_32_ = true;
+                break;
+
+            default:
+                std::cerr << "ERROR: Invalid MLP " << mlp << ". MLP values can be 1, 2, 4, 6, 8, 16 or 32." << std::endl;
+                goto error;
+        }
+    }
+
     //Make sure at least one mode is available
     if (!run_latency_ && !run_throughput_ && !run_extensions_) {
         std::cerr << "ERROR: At least one benchmark type must be selected." << std::endl;
         goto error;
     }
 
-    //Make sure at least one access pattern is selectee
+    //Make sure at least one access pattern is selected
     if (!use_random_access_pattern_ && !use_sequential_access_pattern_) {
-        std::cerr << "ERROR: No access pattern was specified!" << std::endl;    
+        std::cerr << "ERROR: No access pattern was specified!" << std::endl;
         goto error;
     }
-    
+
     //Make sure at least one read/write pattern is selected
     if (!use_reads_ && !use_writes_) {
-        std::cerr << "ERROR: Throughput benchmark was selected, but no read/write pattern was specified!" << std::endl; 
+        std::cerr << "ERROR: Throughput benchmark was selected, but no read/write pattern was specified!" << std::endl;
         goto error;
     }
 
@@ -547,7 +582,7 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
 #ifdef HAS_WORD_512
         use_chunk_512b = true;
 #endif
-        use_random_access_pattern_ = true; 
+        use_random_access_pattern_ = true;
         use_sequential_access_pattern_ = true;
         use_reads_ = true;
         use_writes_ = true;
@@ -562,17 +597,17 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
         use_stride_p16_ = true;
         use_stride_n16_ = true;
     }
-    
+
 #ifdef HAS_WORD_64
     //Notify that 32-bit chunks are not used on random throughput benchmarks on 64-bit machines
-    if (use_random_access_pattern_ && use_chunk_32b_) 
+    if (use_random_access_pattern_ && use_chunk_32b_)
         std::cerr << "NOTE: Random-access load kernels used in throughput and loaded latency benchmarks do not support 32-bit chunk sizes on 64-bit machines. These particular combinations will be omitted." << std::endl;
 #endif
 
     //Check for help or bad options
     if (options[HELP] || options[UNKNOWN] != NULL)
         goto errorWithUsage;
-    
+
     //Report final runtime configuration based on user inputs
     std::cout << std::endl;
     if (verbose_) {
@@ -592,7 +627,7 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
         if (run_extensions_)
             std::cout << "---> Extensions" << std::endl;
         std::cout << std::endl;
-        
+
         std::cout << "Benchmark settings:" << std::endl;
         std::cout << "---> Random access:                   ";
         if (use_random_access_pattern_)
@@ -704,9 +739,9 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
             num_large_pages = working_set_size_per_thread_ / g_large_page_size;
         else //larger than one large page but not a multiple of large page
             num_large_pages = working_set_size_per_thread_ / g_large_page_size + 1;
-        std::cout << working_set_size_per_thread_ << " B == " << working_set_size_per_thread_ / KB  << " KB == " << working_set_size_per_thread_ / MB << " MB (fits in " << num_large_pages << " large pages)" << std::endl; 
-    } else { 
-        std::cout << working_set_size_per_thread_ << " B == " << working_set_size_per_thread_ / KB  << " KB == " << working_set_size_per_thread_ / MB << " MB (" << working_set_size_per_thread_/(g_page_size) << " pages)" << std::endl;   
+        std::cout << working_set_size_per_thread_ << " B == " << working_set_size_per_thread_ / KB  << " KB == " << working_set_size_per_thread_ / MB << " MB (fits in " << num_large_pages << " large pages)" << std::endl;
+    } else {
+        std::cout << working_set_size_per_thread_ << " B == " << working_set_size_per_thread_ / KB  << " KB == " << working_set_size_per_thread_ / MB << " MB (" << working_set_size_per_thread_/(g_page_size) << " pages)" << std::endl;
     }
 
     //Free up options memory

@@ -1,7 +1,7 @@
 /* The MIT License (MIT)
  *
  * Copyright (c) 2014 Microsoft
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -25,7 +25,7 @@
 
 /**
  * @file
- * 
+ *
  * @brief Header file for the Configurator class and some helper data structures.
  */
 
@@ -68,7 +68,8 @@ namespace xmem {
         MEMORY_NUMA_NODE_AFFINITY,
         USE_READS,
         USE_WRITES,
-        STRIDE_SIZE
+        STRIDE_SIZE,
+        MLP
     };
 
     /**
@@ -98,6 +99,7 @@ namespace xmem {
         { USE_READS, 0, "R", "reads", Arg::None, "    -R, --reads    \tUse memory read-based patterns in load traffic-generating threads." },
         { USE_WRITES, 0, "W", "writes", Arg::None, "    -W, --writes    \tUse memory write-based patterns in load traffic-generating threads." },
         { STRIDE_SIZE, 0, "S", "stride_size", MyArg::Integer, "    -S, --stride_size    \tA stride size to use for load traffic-generating threads, specified in powers-of-two multiples of the chunk size(s). Allowed values: 1, -1, 2, -2, 4, -4, 8, -8, 16, -16. Positive indicates the forward direction (increasing addresses), while negative indicates the reverse direction." },
+        { MLP, 0, "m", "mlp", MyArg::PositiveInteger, "    -m, --mlp  \tAn MLP (memory-level parallelism) value to use. Allowed values: 1, 2, 4, 6, 8, 16, 32."},
         { UNKNOWN, 0, "", "", Arg::None,
         "\n"
         "If a given option is not specified, X-Mem defaults will be used where appropriate.\n"
@@ -266,20 +268,20 @@ namespace xmem {
          * @returns True if random access should be used.
          */
         bool useRandomAccessPattern() const { return use_random_access_pattern_; }
-        
+
         /**
          * @brief Determines if throughput benchmarks should use a sequential access pattern.
          * @returns True if sequential access should be used.
          */
         bool useSequentialAccessPattern() const { return use_sequential_access_pattern_; }
 
-        /** 
+        /**
          * @brief Gets the number of worker threads to use.
          * @returns The number of worker threads.
          */
         uint32_t getNumWorkerThreads() const { return num_worker_threads_; }
 
-        /** 
+        /**
          * @brief Gets the numerical index of the first benchmark for CSV output purposes.
          * @returns The starting benchmark index.
          */
@@ -303,7 +305,7 @@ namespace xmem {
          */
         void setUseOutputFile(bool use) { use_output_file_ = use; }
 
-        /** 
+        /**
          * @brief Determines whether X-Mem is in verbose mode.
          * @returns True if verbose mode is enabled.
          */
@@ -320,7 +322,7 @@ namespace xmem {
          * @returns True if reads should be used.
          */
         bool useReads() const { return use_reads_; }
-        
+
         /**
          * @brief Determines whether writes should be used in throughput benchmarks.
          * @returns True if writes should be used.
@@ -332,55 +334,55 @@ namespace xmem {
          * @returns True if a stride of +1 should be used.
          */
         bool useStrideP1() const { return use_stride_p1_; }
-        
+
         /**
          * @brief Determines if a stride of -1 should be used in relevant benchmarks.
          * @returns True if a stride of -1 should be used.
          */
         bool useStrideN1() const { return use_stride_n1_; }
-        
+
         /**
          * @brief Determines if a stride of +2 should be used in relevant benchmarks.
          * @returns True if a stride of +2 should be used.
          */
         bool useStrideP2() const { return use_stride_p2_; }
-        
+
         /**
          * @brief Determines if a stride of -2 should be used in relevant benchmarks.
          * @returns True if a stride of -2 should be used.
          */
         bool useStrideN2() const { return use_stride_n2_; }
-        
+
         /**
          * @brief Determines if a stride of +4 should be used in relevant benchmarks.
          * @returns True if a stride of +4 should be used.
          */
         bool useStrideP4() const { return use_stride_p4_; }
-        
+
         /**
          * @brief Determines if a stride of -4 should be used in relevant benchmarks.
          * @returns True if a stride of -4 should be used.
          */
         bool useStrideN4() const { return use_stride_n4_; }
-        
+
         /**
          * @brief Determines if a stride of +8 should be used in relevant benchmarks.
          * @returns True if a stride of +8 should be used.
          */
         bool useStrideP8() const { return use_stride_p8_; }
-        
+
         /**
          * @brief Determines if a stride of -8 should be used in relevant benchmarks.
          * @returns True if a stride of -8 should be used.
          */
         bool useStrideN8() const { return use_stride_n8_; }
-        
+
         /**
          * @brief Determines if a stride of +16 should be used in relevant benchmarks.
          * @returns True if a stride of +16 should be used.
          */
         bool useStrideP16() const { return use_stride_p16_; }
-        
+
         /**
          * @brief Determines if a stride of -16 should be used in relevant benchmarks.
          * @returns True if a stride of -16 should be used.
@@ -445,6 +447,13 @@ namespace xmem {
         bool use_stride_n8_; /**< If true, use a stride of -8 in relevant benchmarks. */
         bool use_stride_p16_; /**< If true, use a stride of +16 in relevant benchmarks. */
         bool use_stride_n16_; /**< If true, use a stride of -16 in relevant benchmarks. */
+        bool use_mlp_1_; /**< If true, use an MLP of 1 in relevant benchmarks. */
+        bool use_mlp_2_; /**< If true, use an MLP of 2 in relevant benchmarks. */
+        bool use_mlp_4_; /**< If true, use an MLP of 4 in relevant benchmarks. */
+        bool use_mlp_6_; /**< If true, use an MLP of 6 in relevant benchmarks. */
+        bool use_mlp_8_; /**< If true, use an MLP of 8 in relevant benchmarks. */
+        bool use_mlp_16_; /**< If true, use an MLP of 16 in relevant benchmarks. */
+        bool use_mlp_32_; /**< If true, use an MLP of 32 in relevant benchmarks. */
     };
 };
 
