@@ -1650,7 +1650,7 @@ namespace xmem {
      * @param len The number of pointers to deference in a chain-like fashion.
      * @returns Undefined.
      */
-    int32_t randomRead_Word32(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len);
+    int32_t randomRead_Word32(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len, uint8_t mlp);
 #endif
 
     //32-bit systems only.
@@ -1673,7 +1673,7 @@ namespace xmem {
      * @param len The number of pointers to deference in a chain-like fashion.
      * @returns Undefined.
      */
-    int32_t randomRead_Word128(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len);
+    int32_t randomRead_Word128(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len, uint8_t mlp);
 #endif
 
 #ifdef HAS_WORD_256
@@ -1684,7 +1684,7 @@ namespace xmem {
      * @param len The number of pointers to deference in a chain-like fashion.
      * @returns Undefined.
      */
-    int32_t randomRead_Word256(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len);
+    int32_t randomRead_Word256(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len, uint8_t mlp);
 #endif
 
 #ifdef HAS_WORD_512
@@ -1695,7 +1695,7 @@ namespace xmem {
      * @param len The number of pointers to deference in a chain-like fashion.
      * @returns Undefined.
      */
-    int32_t randomRead_Word512(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len);
+    int32_t randomRead_Word512(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len, uint8_t mlp);
 #endif
 
     /* ------------ RANDOM WRITE --------------*/
@@ -1709,7 +1709,7 @@ namespace xmem {
      * @param len The number of pointers to deference in a chain-like fashion.
      * @returns Undefined.
      */
-    int32_t randomWrite_Word32(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len);
+    int32_t randomWrite_Word32(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len, uint8_t mlp);
 #endif
 
 #ifdef HAS_WORD_64
@@ -1731,7 +1731,7 @@ namespace xmem {
      * @param len The number of pointers to deference in a chain-like fashion.
      * @returns Undefined.
      */
-    int32_t randomWrite_Word128(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len);
+    int32_t randomWrite_Word128(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len, uint8_t mlp);
 #endif
 
 #ifdef HAS_WORD_256
@@ -1742,7 +1742,7 @@ namespace xmem {
      * @param len The number of pointers to deference in a chain-like fashion.
      * @returns Undefined.
      */
-    int32_t randomWrite_Word256(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len);
+    int32_t randomWrite_Word256(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len, uint8_t mlp);
 #endif
 
 #ifdef HAS_WORD_512
@@ -1753,7 +1753,7 @@ namespace xmem {
      * @param len The number of pointers to deference in a chain-like fashion.
      * @returns Undefined.
      */
-    int32_t randomWrite_Word512(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len);
+    int32_t randomWrite_Word512(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len, uint8_t mlp);
 #endif
 };
 

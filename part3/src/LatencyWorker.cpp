@@ -88,7 +88,7 @@ void LatencyWorker::run() {
     void* mem_array = NULL;
     size_t len = 0;
     tick_t target_ticks = g_ticks_per_ms * BENCHMARK_DURATION_MS; //Rough target run duration in ticks
-    uint8_t mlp = 1; //TODOJ: this might be wrong
+    uint8_t mlp = mlp_; //TODOJ: this might be wrong
 
     //Grab relevant setup state thread-safely and keep it local
     if (acquireLock(-1)) {

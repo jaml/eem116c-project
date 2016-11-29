@@ -405,7 +405,6 @@ namespace xmem {
 
         //TODOJ: wrong?
         uint8_t getMlp() const { return mlp_; }
-        //uint8_t getMlp() const { return mlp_; }
 
     private:
         /**

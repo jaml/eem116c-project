@@ -264,7 +264,9 @@ double LatencyBenchmark::getMeanLoadMetric() const {
 
 bool LatencyBenchmark::runCore() {
     size_t len_per_thread = len_ / num_worker_threads_; //Carve up memory space so each worker has its own area to play in
-    uint8_t mlp = getMlp(); //TODOJ: ?
+    uint8_t mlp = getMlp();
+    //std::cout << "latencybenchmark::runcore mlp(after getmlp) is "<<mlp+0<<" and mlp_ is "<<mlp_+0<<std::endl;
+        //TODOJ: delete the above commented output. mlp and mlp_ both get the correct value in this function.
     //uint8_t mlp = mlp_; //TODOJ: did I even define member function mlp_?
 
     //Set up latency measurement kernel function pointers
@@ -347,6 +349,7 @@ bool LatencyBenchmark::runCore() {
         for (uint32_t t = 0; t < num_worker_threads_; t++) {
             void* thread_mem_array = reinterpret_cast<void*>(reinterpret_cast<uint8_t*>(mem_array_) + t*len_per_thread);
             int32_t cpu_id = cpu_id_in_numa_node(cpu_node_, t);
+
             if (cpu_id < 0)
                 std::cerr << "WARNING: Failed to find logical CPU " << t << " in NUMA node " << cpu_node_ << std::endl;
             if (t == 0) { //special case: thread 0 is always latency thread

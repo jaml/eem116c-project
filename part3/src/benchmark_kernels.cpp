@@ -995,7 +995,6 @@ int32_t xmem::chasePointers(uintptr_t* first_address, uintptr_t** last_touched_a
     UNROLL512(p = reinterpret_cast<uintptr_t*>(*p);)
     *last_touched_address = const_cast<uintptr_t*>(p);
 
-    std::cout << "debug output: chasepointers mlp is " << mlp+0 << std::endl; //TODOJ: uncomment me
     return 0;
 }
 
@@ -3692,6 +3691,7 @@ int32_t xmem::randomRead_Word32(uintptr_t* first_address, uintptr_t** last_touch
 
 #ifdef HAS_WORD_64
 int32_t xmem::randomRead_Word64(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len, uint8_t mlp) {
+std::cout << "~~~~~~~~~~~randomRead_Word64 mlp is "<<mlp+0<<std::endl; //TODOJ: deleteme
     volatile uintptr_t* p = first_address;
 
     UNROLL512(p = reinterpret_cast<uintptr_t*>(*p);)
@@ -3702,6 +3702,7 @@ int32_t xmem::randomRead_Word64(uintptr_t* first_address, uintptr_t** last_touch
 
 #ifdef HAS_WORD_128
 int32_t xmem::randomRead_Word128(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len, uint8_t mlp) {
+std::cout << "~~~~~~~~~~~randomRead_Word128 mlp is "<<mlp+0<<std::endl; //TODOJ: deleteme
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return 0; //TODO: Implement for Windows.
 #else

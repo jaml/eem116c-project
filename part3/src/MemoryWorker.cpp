@@ -68,7 +68,9 @@ size_t MemoryWorker::getLen() {
     return retval;
 }
 
+#include <iostream> //TODOJ: delete after debug output
 uint8_t MemoryWorker::getMlp() { //TODOJ: ?
+    std::cout << "memoryworker call to getMlp returns "<<mlp_+0<<std::endl;
     uint8_t retval = 1;
     if (acquireLock(-1)) {
         retval = mlp_;

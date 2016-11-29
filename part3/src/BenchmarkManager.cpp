@@ -583,7 +583,7 @@ bool BenchmarkManager::buildBenchmarks() {
         mlp = 32;
 */
     uint8_t mlp = config_.getMlp();
-
+    
 /*//TODOJ: don't think this is right, but mlp as a vector:
     std::vector<uint8_t> mlp;
     if (config_.useMlp1())

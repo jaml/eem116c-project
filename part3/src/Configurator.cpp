@@ -519,17 +519,15 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
         char* endptr = NULL;
         uint8_t mlp = static_cast<uint8_t>(strtoul(options[MLP].arg, &endptr, 10));
 
-        switch(mlp) {
+        switch(mlp) { // here, mlp is the command-line argument, not the Configurator class data member
             case 1:
                 use_mlp_1_ = true;
-                //mlp = 1;
                 mlp_ = 1;
                 break;
             case 2:
                 use_mlp_1_ = false;
                 use_mlp_2_ = true;
-                //mlp = 2;
-                mlp_ = 2; //TODOJ: delete this after testing
+                mlp_ = 2;
                 break;
             case 4:
                 use_mlp_1_ = false;
@@ -544,7 +542,7 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
             case 8:
                 use_mlp_1_ = false;
                 use_mlp_8_ = true;
-                mlp = 8;
+                mlp_ = 8;
                 break;
             case 16:
                 use_mlp_1_ = false;
@@ -798,17 +796,17 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
 uint8_t Configurator::getMlp() const {
     if (useMlp1())
         return 1;
-    if (useMlp2())
+    else if (useMlp2())
         return 2;
-    if (useMlp4())
+    else if (useMlp4())
         return 4;
-    if (useMlp6())
+    else if (useMlp6())
         return 6;
-    if (useMlp8())
+    else if (useMlp8())
         return 8;
-    if (useMlp16())
+    else if (useMlp16())
         return 16;
-    if (useMlp32())
+    else if (useMlp32())
         return 32;
 }*/
 
