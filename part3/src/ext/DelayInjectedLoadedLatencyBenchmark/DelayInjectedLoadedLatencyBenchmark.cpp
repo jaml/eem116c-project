@@ -95,6 +95,10 @@ uint32_t DelayInjectedLoadedLatencyBenchmark::getDelay() const {
     return delay_;
 }
 
+uint8_t DelayInjectedLoadedLatencyBenchmark::getMlp() const { //TODOJ: do I need this?
+    return mlp_;
+}
+
 bool DelayInjectedLoadedLatencyBenchmark::runCore() {
     size_t len_per_thread = len_ / num_worker_threads_; //Carve up memory space so each worker has its own area to play in
     uint8_t mlp = mlp_; //TODOJ: may need to define mlp_

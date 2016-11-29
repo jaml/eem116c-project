@@ -403,8 +403,9 @@ namespace xmem {
 
         bool useMlp32() const { return use_mlp_32_; }
 
-        //TODOJ: wrong? uint8_t getMlp();
+        //TODOJ: wrong?
         uint8_t getMlp() const { return mlp_; }
+        //uint8_t getMlp() const { return mlp_; }
 
     private:
         /**

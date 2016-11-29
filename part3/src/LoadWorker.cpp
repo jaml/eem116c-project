@@ -62,7 +62,7 @@ LoadWorker::LoadWorker(
             mlp,
             cpu_affinity
         ),
-        //mlp_(mlp), //TODOJ: maybe this?
+        mlp_(mlp), //TODOJ: maybe this?
         use_sequential_kernel_fptr_(true),
         kernel_fptr_seq_(kernel_fptr),
         kernel_dummy_fptr_seq_(kernel_dummy_fptr),
@@ -122,12 +122,13 @@ void LoadWorker::run() {
     uint32_t p = 0;
     bytes_per_pass = THROUGHPUT_BENCHMARK_BYTES_PER_PASS;
     uint8_t mlp = 1;  //TODOJ: pretty sure this hardcoded one is wrong! may have to set to mlp_, and then uncomment mlp_ in constructor (line 65)
+    //uint8_t mlp = mlp_; //TODOJ: ?
 
     //Grab relevant setup state thread-safely and keep it local
     if (acquireLock(-1)) {
         mem_array = mem_array_;
         len = len_;
-        mlp = mlp_;
+        mlp = mlp_; //TODOJ: ?
         cpu_affinity = cpu_affinity_;
         use_sequential_kernel_fptr = use_sequential_kernel_fptr_;
         kernel_fptr_seq = kernel_fptr_seq_;

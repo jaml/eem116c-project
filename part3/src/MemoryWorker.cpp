@@ -68,8 +68,13 @@ size_t MemoryWorker::getLen() {
     return retval;
 }
 
-uint8_t MemoryWorker::getMlp() {
-    return mlp_;
+uint8_t MemoryWorker::getMlp() { //TODOJ: ?
+    uint8_t retval = 1;
+    if (acquireLock(-1)) {
+        retval = mlp_;
+        releaseLock();
+    }
+    return retval;
 }
 
 uint32_t MemoryWorker::getBytesPerPass() {

@@ -89,6 +89,7 @@ namespace xmem {
 
         private:
             // ONLY ACCESS OBJECT VARIABLES UNDER THE RUNNABLE OBJECT LOCK!!!!
+            uint8_t mlp_; //TODOJ: ?
             bool use_sequential_kernel_fptr_; /**< If true, use the SequentialFunction, otherwise use the RandomFunction. */
             SequentialFunction kernel_fptr_seq_; /**< Points to the memory test core routine to use of the "sequential" type. */
             SequentialFunction kernel_dummy_fptr_seq_; /**< Points to a dummy version of the memory test core routine to use of the "sequential" type. */

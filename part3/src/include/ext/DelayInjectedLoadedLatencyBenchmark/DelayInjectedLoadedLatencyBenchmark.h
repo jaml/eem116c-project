@@ -61,7 +61,7 @@ namespace xmem {
             uint32_t mem_node,
             uint32_t cpu_node,
             chunk_size_t chunk_size,
-            uint8_t mlp, 
+            uint8_t mlp,
             std::vector<PowerReader*> dram_power_readers,
             std::string name,
             uint32_t delay
@@ -82,6 +82,8 @@ namespace xmem {
          * @returns The delay value.
          */
         uint32_t getDelay() const;
+
+        uint8_t getMlp() const; //TODOJ: do I need this?
 
     protected:
         virtual bool runCore();

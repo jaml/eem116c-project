@@ -106,7 +106,7 @@ Configurator::Configurator(
     use_mlp_8_(false),
     use_mlp_16_(false),
     use_mlp_32_(false),
-    mlp_(1)
+    mlp_(1) //mlp_() //TODOJ: should this be init to 1?
     {
 }
 
@@ -517,36 +517,43 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
     if (options[MLP]) { // override default of 1
         // Followed the same option parsing style as for STRIDE_SIZE.
         char* endptr = NULL;
-        int32_t mlp = static_cast<uint8_t>(strtoul(options[MLP].arg, &endptr, 10));
+        uint8_t mlp = static_cast<uint8_t>(strtoul(options[MLP].arg, &endptr, 10));
 
         switch(mlp) {
             case 1:
                 use_mlp_1_ = true;
-                mlp_ = 1;
+                mlp = 1;
                 break;
             case 2:
+                use_mlp_1_ = false;
                 use_mlp_2_ = true;
-                mlp_ = 2;
+                mlp = 2;
+                mlp_ = 2; //TODOJ: delete this after testing
                 break;
             case 4:
+                use_mlp_1_ = false;
                 use_mlp_4_ = true;
-                mlp_ = 4;
+                mlp = 4;
                 break;
             case 6:
+                use_mlp_1_ = false;
                 use_mlp_6_ = true;
-                mlp_ = 6;
+                mlp = 6;
                 break;
             case 8:
+                use_mlp_1_ = false;
                 use_mlp_8_ = true;
-                mlp_ = 8;
+                mlp = 8;
                 break;
             case 16:
+                use_mlp_1_ = false;
                 use_mlp_16_ = true;
-                mlp_ = 16;
+                mlp = 16;
                 break;
             case 32:
+                use_mlp_1_ = false;
                 use_mlp_32_ = true;
-                mlp_ = 32;
+                mlp = 32;
                 break;
 
             default:
@@ -785,21 +792,22 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
         return -1;
 }
 
-/* //TODOJ: delete?
+//TODOJ: delete?
+/*
 uint8_t Configurator::getMlp() const {
-    if (config_.useMlp1())
+    if (useMlp1())
         return 1;
-    if (config_.useMlp2())
+    if (useMlp2())
         return 2;
-    if (config_.useMlp4())
+    if (useMlp4())
         return 4;
-    if (config_.useMlp6())
+    if (useMlp6())
         return 6;
-    if (config_.useMlp8())
+    if (useMlp8())
         return 8;
-    if (config_.useMlp16())
+    if (useMlp16())
         return 16;
-    if (config_.useMlp32())
+    if (useMlp32())
         return 32;
 }*/
 
