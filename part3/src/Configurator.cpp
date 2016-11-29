@@ -98,7 +98,14 @@ Configurator::Configurator(
     use_stride_p8_(false),
     use_stride_n8_(false),
     use_stride_p16_(false),
-    use_stride_n16_(false)
+    use_stride_n16_(false),
+    use_mlp_1_(true),
+    use_mlp_2_(false),
+    use_mlp_4_(false),
+    use_mlp_6_(false),
+    use_mlp_8_(false),
+    use_mlp_16_(false),
+    use_mlp_32_(false)
     {
 }
 
@@ -596,6 +603,14 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
         use_stride_n8_ = true;
         use_stride_p16_ = true;
         use_stride_n16_ = true;
+
+        use_mlp_1_ = true; // default MLP 1
+        use_mlp_2_ = false;
+        use_mlp_4_ = false;
+        use_mlp_6_ = false;
+        use_mlp_8_ = false;
+        use_mlp_16_ = false;
+        use_mlp_32_ = false;
     }
 
 #ifdef HAS_WORD_64

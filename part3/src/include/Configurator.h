@@ -389,6 +389,20 @@ namespace xmem {
          */
         bool useStrideN16() const { return use_stride_n16_; }
 
+        bool useMlp1() const { return use_mlp_1_; }
+
+        bool useMlp2() const { return use_mlp_2_; }
+
+        bool useMlp4() const { return use_mlp_4_; }
+
+        bool useMlp6() const { return use_mlp_6_; }
+
+        bool useMlp8() const { return use_mlp_8_; }
+
+        bool useMlp16() const { return use_mlp_16_; }
+
+        bool useMlp32() const { return use_mlp_32_; }
+
     private:
         /**
          * @brief Inspects a command line option (switch) to see if it occurred more than once, and warns the user if this is the case. The program only uses the first occurrence of any switch.
