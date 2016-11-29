@@ -130,7 +130,9 @@ void LatencyWorker::run() {
     next_address = static_cast<uintptr_t*>(mem_array);
     while (elapsed_ticks < target_ticks) {
         start_tick = start_timer();
-        UNROLL256((*kernel_fptr)(next_address, &next_address, 0, mlp);)  //TODOJ: I only temp. set mlp (last arg) to 1. May need to change this.
+        //TODOJ: below, should we change it from len=0 to len=len??
+        //TODOJ: ??? I get segfault or invalid read of size 8 w/ len, divide by 0 error w/ 0
+        UNROLL256((*kernel_fptr)(next_address, &next_address, len, mlp);)  //TODOJ: I only temp. set mlp (last arg) to 1. May need to change this.
         stop_tick = stop_timer();
         elapsed_ticks += (stop_tick - start_tick);
         passes+=256;
@@ -140,7 +142,9 @@ void LatencyWorker::run() {
     next_address = static_cast<uintptr_t*>(mem_array);
     while (p < passes) {
         start_tick = start_timer();
-        UNROLL256((*kernel_dummy_fptr)(next_address, &next_address, 0, mlp);) //TODOJ: I only temp. set mlp (last arg) to 1. May need to change this.
+        //TODOJ: below, should we change it from len=0 to len=len??
+        // I get segfault w/ len
+        UNROLL256((*kernel_dummy_fptr)(next_address, &next_address, len, mlp);) //TODOJ: I only temp. set mlp (last arg) to 1. May need to change this.
         stop_tick = stop_timer();
         elapsed_dummy_ticks += (stop_tick - start_tick);
         p+=256;

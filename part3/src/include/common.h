@@ -1,7 +1,7 @@
 /* The MIT License (MIT)
  *
  * Copyright (c) 2014 Microsoft
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -25,7 +25,7 @@
 
 /**
  * @file
- * 
+ *
  * @brief Header file for common preprocessor definitions, macros, functions, and global constants.
  */
 
@@ -278,7 +278,8 @@ namespace xmem {
 #define UNROLL32768(x) UNROLL16384(x) UNROLL16384(x)
 #define UNROLL65536(x) UNROLL32768(x) UNROLL32768(x)
 
-#define LATENCY_BENCHMARK_UNROLL_LENGTH 512 /**< Number of unrolls in the latency benchmark pointer chasing core function. */
+//#define LATENCY_BENCHMARK_UNROLL_LENGTH 512 /**< Number of unrolls in the latency benchmark pointer chasing core function. */
+#define LATENCY_BENCHMARK_UNROLL_LENGTH 1024 //TODOJ: try this instead of 512 
 
 /***********************************************************************************************************/
 /***********************************************************************************************************/
@@ -314,7 +315,7 @@ namespace xmem {
 //Compile-time options checks: timers
 #ifdef USE_OS_TIMER
 #ifdef _WIN32
-#define USE_QPC_TIMER 
+#define USE_QPC_TIMER
 #endif
 #ifdef __gnu_linux__
 #define USE_POSIX_TIMER
@@ -332,7 +333,7 @@ namespace xmem {
 
 #if defined(USE_OS_TIMER) && defined(USE_HW_TIMER)
 #error Only one type of timer may be defined!
-#endif 
+#endif
 
 #if BENCHMARK_DURATION_MS <= 0
 #error BENCHMARK_DURATION_MS must be positive!
@@ -370,7 +371,7 @@ namespace xmem {
 
     //Typedef the platform specific stuff to word sizes to match 4 different chunk options
 #if defined(ARCH_64BIT) || defined(ARCH_ARM_NEON)
-#define HAS_WORD_64 
+#define HAS_WORD_64
 #endif
 #if defined(ARCH_INTEL_AVX) || defined(ARCH_ARM_NEON)
 #define HAS_WORD_128
@@ -382,7 +383,7 @@ namespace xmem {
 #define HAS_WORD_512
 #endif
 
-    typedef uint32_t Word32_t; 
+    typedef uint32_t Word32_t;
 #ifdef HAS_WORD_64
     typedef uint64_t Word64_t;
 #endif

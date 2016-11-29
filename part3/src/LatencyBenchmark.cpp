@@ -265,6 +265,8 @@ double LatencyBenchmark::getMeanLoadMetric() const {
 bool LatencyBenchmark::runCore() {
     size_t len_per_thread = len_ / num_worker_threads_; //Carve up memory space so each worker has its own area to play in
     uint8_t mlp = getMlp();
+    uint8_t mlp_ = mlp; //TODOJ: Is this right? Not sure how to pass into the lat_kernel_fptr = &chasePointers; below
+    
     //std::cout << "latencybenchmark::runcore mlp(after getmlp) is "<<mlp+0<<" and mlp_ is "<<mlp_+0<<std::endl;
         //TODOJ: delete the above commented output. mlp and mlp_ both get the correct value in this function.
     //uint8_t mlp = mlp_; //TODOJ: did I even define member function mlp_?
@@ -272,7 +274,6 @@ bool LatencyBenchmark::runCore() {
     //Set up latency measurement kernel function pointers
     RandomFunction lat_kernel_fptr = &chasePointers;
     RandomFunction lat_kernel_dummy_fptr = &dummy_chasePointers;
-
 
     //Initialize memory regions for all threads by writing to them, causing the memory to be physically resident.
     forwSequentialWrite_Word32(mem_array_,
@@ -395,8 +396,8 @@ bool LatencyBenchmark::runCore() {
         //Compute latency metric
         uint32_t lat_passes = workers[0]->getPasses();
         // With <MLP> number of chains, take average.
-        tick_t lat_adjusted_ticks = (workers[0]->getAdjustedTicks() / mlp_ );
-        tick_t lat_elapsed_dummy_ticks = (workers[0]->getElapsedDummyTicks() / mlp_);
+        tick_t lat_adjusted_ticks = workers[0]->getAdjustedTicks();
+        tick_t lat_elapsed_dummy_ticks = workers[0]->getElapsedDummyTicks();
         uint32_t lat_bytes_per_pass = workers[0]->getBytesPerPass();
         uint32_t lat_accesses_per_pass = lat_bytes_per_pass / 8;
         iterwarning |= workers[0]->hadWarning();

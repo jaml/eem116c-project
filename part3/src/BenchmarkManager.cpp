@@ -583,7 +583,7 @@ bool BenchmarkManager::buildBenchmarks() {
         mlp = 32;
 */
     uint8_t mlp = config_.getMlp();
-    
+
 /*//TODOJ: don't think this is right, but mlp as a vector:
     std::vector<uint8_t> mlp;
     if (config_.useMlp1())
@@ -640,7 +640,7 @@ bool BenchmarkManager::buildBenchmarks() {
                                                                          rw,
                                                                          chunk,
                                                                          stride,
-                                                                         mlp,
+                                                                         config_.getMlp(), //mlp, //TODOJ: Is it better to call getMlp like the 2 above, rather than passing in mlp?
                                                                          dram_power_readers_,
                                                                          benchmark_name));
                             if (tp_benchmarks_[tp_benchmarks_.size()-1] == NULL) {
@@ -663,7 +663,7 @@ bool BenchmarkManager::buildBenchmarks() {
                                                                                 rw,
                                                                                 chunk,
                                                                                 stride,
-                                                                                mlp,
+                                                                                config_.getMlp(), //mlp,
                                                                                 dram_power_readers_,
                                                                                 benchmark_name));
                                 if (lat_benchmarks_[lat_benchmarks_.size()-1] == NULL) {
@@ -702,7 +702,7 @@ bool BenchmarkManager::buildBenchmarks() {
                                                                           rw,
                                                                           chunk,
                                                                           0,
-                                                                          mlp,
+                                                                          config_.getMlp(), //mlp,
                                                                           dram_power_readers_,
                                                                           benchmark_name));
                         if (tp_benchmarks_[tp_benchmarks_.size()-1] == NULL) {
@@ -724,7 +724,7 @@ bool BenchmarkManager::buildBenchmarks() {
                                                                             rw,
                                                                             chunk,
                                                                             0, //stride
-                                                                            mlp,
+                                                                            config_.getMlp(), //mlp,
                                                                             dram_power_readers_,
                                                                             benchmark_name));
                             if (lat_benchmarks_[lat_benchmarks_.size()-1] == NULL) {
@@ -797,7 +797,7 @@ bool BenchmarkManager::runExtDelayInjectedLoadedLatencyBenchmark() {
                                                                              mem_node,
                                                                              cpu_node,
                                                                              chunk,
-                                                                             mlp,
+                                                                             config_.getMlp(), //mlp,
                                                                              dram_power_readers_,
                                                                              benchmark_name,
                                                                              d));
