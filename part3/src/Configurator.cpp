@@ -517,7 +517,7 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
     if (options[MLP]) { // override default of 1
         // Followed the same option parsing style as for STRIDE_SIZE.
         char* endptr = NULL;
-        int32_t mlp = static_cast<int32_t>(strtoul(options[MLP].arg, &endptr, 10));
+        int32_t mlp = static_cast<uint8_t>(strtoul(options[MLP].arg, &endptr, 10));
 
         switch(mlp) {
             case 1:

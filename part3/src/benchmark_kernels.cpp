@@ -994,6 +994,8 @@ int32_t xmem::chasePointers(uintptr_t* first_address, uintptr_t** last_touched_a
     volatile uintptr_t* p = first_address;
     UNROLL512(p = reinterpret_cast<uintptr_t*>(*p);)
     *last_touched_address = const_cast<uintptr_t*>(p);
+
+    std::cout << "debug output: mlp is " << mlp+0 << std::endl;
     return 0;
 }
 
