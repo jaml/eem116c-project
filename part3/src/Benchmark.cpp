@@ -398,7 +398,6 @@ int32_t Benchmark::getStrideSize() const {
 }
 
 uint8_t Benchmark::getMlp() const {
-    std::cout << "benchmark::getmlp returns for mlp_: "<< mlp_ <<std::endl;
     return mlp_;
 }
 

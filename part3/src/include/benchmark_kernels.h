@@ -44,6 +44,7 @@ namespace xmem {
 
     typedef int32_t(*SequentialFunction)(void*, void*);
     typedef int32_t(*RandomFunction)(uintptr_t*, uintptr_t**, size_t, uint8_t);
+        //RandomFunction returns type int32_t; aliases ptr to fxn w/ args. uintptr_t*, uintptr_t**, size_t, uint8_
 
     /**
      * @brief Determines which sequential memory access kernel to use based on the read/write mode, chunk size, and stride size.

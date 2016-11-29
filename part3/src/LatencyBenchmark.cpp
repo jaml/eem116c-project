@@ -264,8 +264,8 @@ double LatencyBenchmark::getMeanLoadMetric() const {
 
 bool LatencyBenchmark::runCore() {
     size_t len_per_thread = len_ / num_worker_threads_; //Carve up memory space so each worker has its own area to play in
-    //uint8_t mlp = getMlp(); //TODOJ: ?
-    uint8_t mlp = mlp_; //TODOJ: did I even define member function mlp_?
+    uint8_t mlp = getMlp(); //TODOJ: ?
+    //uint8_t mlp = mlp_; //TODOJ: did I even define member function mlp_?
 
     //Set up latency measurement kernel function pointers
     RandomFunction lat_kernel_fptr = &chasePointers;

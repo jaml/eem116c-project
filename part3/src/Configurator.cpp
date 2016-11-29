@@ -522,23 +522,24 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
         switch(mlp) {
             case 1:
                 use_mlp_1_ = true;
-                mlp = 1;
+                //mlp = 1;
+                mlp_ = 1;
                 break;
             case 2:
                 use_mlp_1_ = false;
                 use_mlp_2_ = true;
-                mlp = 2;
+                //mlp = 2;
                 mlp_ = 2; //TODOJ: delete this after testing
                 break;
             case 4:
                 use_mlp_1_ = false;
                 use_mlp_4_ = true;
-                mlp = 4;
+                mlp_ = 4;
                 break;
             case 6:
                 use_mlp_1_ = false;
                 use_mlp_6_ = true;
-                mlp = 6;
+                mlp_ = 6;
                 break;
             case 8:
                 use_mlp_1_ = false;
@@ -548,12 +549,12 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
             case 16:
                 use_mlp_1_ = false;
                 use_mlp_16_ = true;
-                mlp = 16;
+                mlp_ = 16;
                 break;
             case 32:
                 use_mlp_1_ = false;
                 use_mlp_32_ = true;
-                mlp = 32;
+                mlp_ = 32;
                 break;
 
             default:
