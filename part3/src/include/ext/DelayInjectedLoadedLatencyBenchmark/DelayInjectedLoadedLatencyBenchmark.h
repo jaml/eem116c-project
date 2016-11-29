@@ -1,7 +1,7 @@
 /* The MIT License (MIT)
  *
  * Copyright (c) 2014 Microsoft
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -25,7 +25,7 @@
 
 /**
  * @file
- * 
+ *
  * @brief Header file for the DelayInjectedLoadedLatencyBenchmark class.
  */
 
@@ -49,7 +49,7 @@ namespace xmem {
      */
     class DelayInjectedLoadedLatencyBenchmark : public LatencyBenchmark {
     public:
-        
+
         /**
          * @brief Constructor. Parameters are passed directly to the LatencyBenchmark constructor. See LatencyBenchmark class documentation for parameter semantics. The access pattern is hard-coded to SEQUENTIAL, read/write pattern to READ, and stride to 1. Chunk size may be either 64-bit or 256-bit.
          */
@@ -61,16 +61,17 @@ namespace xmem {
             uint32_t mem_node,
             uint32_t cpu_node,
             chunk_size_t chunk_size,
+            uint8_t mlp, 
             std::vector<PowerReader*> dram_power_readers,
             std::string name,
             uint32_t delay
         );
-        
+
         /**
          * @brief Destructor.
          */
         virtual ~DelayInjectedLoadedLatencyBenchmark() {}
-    
+
         /**
          * @brief Reports benchmark configuration details to the console.
          */

@@ -1,7 +1,7 @@
 /* The MIT License (MIT)
  *
  * Copyright (c) 2014 Microsoft
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -25,7 +25,7 @@
 
 /**
  * @file
- * 
+ *
  * @brief Header file for the LatencyBenchmark class.
  */
 
@@ -47,7 +47,7 @@ namespace xmem {
      */
     class LatencyBenchmark : public Benchmark {
     public:
-        
+
         /**
          * @brief Constructor. Parameters are passed directly to the Benchmark constructor. See Benchmark class documentation for parameter semantics.
          */
@@ -62,10 +62,11 @@ namespace xmem {
             rw_mode_t rw_mode,
             chunk_size_t chunk_size,
             int32_t stride_size,
+            uint8_t mlp,
             std::vector<PowerReader*> dram_power_readers,
             std::string name
         );
-        
+
         /**
          * @brief Destructor.
          */
@@ -76,14 +77,14 @@ namespace xmem {
          * @brief iter The iteration of interest.
          * @returns The average throughput in MB/sec.
          */
-        double getLoadMetricOnIter(uint32_t iter) const;        
-        
+        double getLoadMetricOnIter(uint32_t iter) const;
+
         /**
          * @brief Get the overall arithmetic mean load throughput in MB/sec that was imposed on the latency measurement.
          * @returns The mean throughput in MB/sec.
          */
-        double getMeanLoadMetric() const;        
-        
+        double getMeanLoadMetric() const;
+
         /**
          * @brief Reports benchmark configuration details to the console.
          */
@@ -96,9 +97,9 @@ namespace xmem {
 
     protected:
         virtual bool runCore();
-        
+
         std::vector<double> load_metric_on_iter_; /**< Load metrics for each iteration of the benchmark. This is in MB/s. */
-        double mean_load_metric_; /**< The average load throughput in MB/sec that was imposed on the latency measurement. */   
+        double mean_load_metric_; /**< The average load throughput in MB/sec that was imposed on the latency measurement. */
     };
 };
 

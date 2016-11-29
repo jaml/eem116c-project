@@ -105,7 +105,8 @@ Configurator::Configurator(
     use_mlp_6_(false),
     use_mlp_8_(false),
     use_mlp_16_(false),
-    use_mlp_32_(false)
+    use_mlp_32_(false),
+    mlp_(1)
     {
 }
 
@@ -521,24 +522,31 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
         switch(mlp) {
             case 1:
                 use_mlp_1_ = true;
+                mlp_ = 1;
                 break;
             case 2:
                 use_mlp_2_ = true;
+                mlp_ = 2;
                 break;
             case 4:
                 use_mlp_4_ = true;
+                mlp_ = 4;
                 break;
             case 6:
                 use_mlp_6_ = true;
+                mlp_ = 6;
                 break;
             case 8:
                 use_mlp_8_ = true;
+                mlp_ = 8;
                 break;
             case 16:
                 use_mlp_16_ = true;
+                mlp_ = 16;
                 break;
             case 32:
                 use_mlp_32_ = true;
+                mlp_ = 32;
                 break;
 
             default:
@@ -776,6 +784,24 @@ int32_t Configurator::configureFromInput(int argc, char* argv[]) {
 
         return -1;
 }
+
+/* //TODOJ: delete?
+uint8_t Configurator::getMlp() const {
+    if (config_.useMlp1())
+        return 1;
+    if (config_.useMlp2())
+        return 2;
+    if (config_.useMlp4())
+        return 4;
+    if (config_.useMlp6())
+        return 6;
+    if (config_.useMlp8())
+        return 8;
+    if (config_.useMlp16())
+        return 16;
+    if (config_.useMlp32())
+        return 32;
+}*/
 
 bool Configurator::check_single_option_occurrence(Option* opt) const {
     if (opt->count() > 1) {

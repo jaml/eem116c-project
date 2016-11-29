@@ -1,7 +1,7 @@
 /* The MIT License (MIT)
  *
  * Copyright (c) 2014 Microsoft
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -25,7 +25,7 @@
 
 /**
  * @file
- * 
+ *
  * @brief Header file for the Benchmark class.
  */
 
@@ -84,6 +84,7 @@ namespace xmem {
             rw_mode_t rw_mode,
             chunk_size_t chunk_size,
             int32_t stride_size,
+            uint8_t mlp,
             std::vector<PowerReader*> dram_power_readers,
             std::string metric_units,
             std::string name
@@ -100,7 +101,7 @@ namespace xmem {
          */
         bool run();
 
-        /** 
+        /**
          * @brief Prints a header piece of information describing the benchmark to the console.
          */
         void printBenchmarkHeader() const;
@@ -151,25 +152,25 @@ namespace xmem {
          * @returns The 25th percentile metric.
          */
         double get25PercentileMetric() const;
-        
+
         /**
          * @brief Gets the median benchmark metric across all iterations.
          * @returns The median metric.
          */
         double getMedianMetric() const;
-       
+
         /**
          * @brief Gets the 75th percentile benchmark metric across all iterations.
          * @returns The 75th percentile metric.
          */
         double get75PercentileMetric() const;
-        
+
         /**
          * @brief Gets the 95th percentile benchmark metric across all iterations.
          * @returns The 95th percentile metric.
          */
         double get95PercentileMetric() const;
-        
+
         /**
          * @brief Gets the 99th percentile benchmark metric across all iterations.
          * @returns The 99th percentile metric.
@@ -199,7 +200,7 @@ namespace xmem {
          * @returns The mean DRAM power for a given socket in watts, or 0 if the data does not exist (power was unable to be collected or the benchmark has not run).
          */
         double getMeanDRAMPower(uint32_t socket_id) const;
-        
+
         /**
          * @brief Gets the peak DRAM power over the benchmark.
          * @returns The peak DRAM power for a given socket in watts, or 0 if the data does not exist (power was unable to be collected or the benchmark has not run).
@@ -229,6 +230,13 @@ namespace xmem {
          * @returns The stride size in chunks.
          */
         int32_t getStrideSize() const;
+
+
+        /**
+         * @brief Gets the MLP for this benchmark.
+         * @returns The MLP.
+         */
+        uint8_t getMlp() const;
 
         /**
          * @brief Gets the CPU NUMA node used in this benchmark.
@@ -267,9 +275,9 @@ namespace xmem {
         rw_mode_t getRWMode() const;
 
     protected:
-    
+
         /**
-         * @brief The core benchmark function. 
+         * @brief The core benchmark function.
          * @returns True on success.
          */
         virtual bool runCore() = 0;
@@ -299,22 +307,24 @@ namespace xmem {
 
         //Benchmark repetition
         uint32_t iterations_; /**< Number of iterations used in this benchmark. */
-    
+
         //Threading and affinity
         uint32_t num_worker_threads_; /**< The number of worker threads used in this benchmark. */
         uint32_t mem_node_; /**< The memory NUMA node used in this benchmark. */
         uint32_t cpu_node_; /**< The CPU NUMA node used in this benchmark. */
-        
+
         //Benchmarking settings
         pattern_mode_t pattern_mode_; /**< Access pattern mode. */
         rw_mode_t rw_mode_; /**< Read/write mode. */
         chunk_size_t chunk_size_; /**< Chunk size of memory accesses in this benchmark. */
         int32_t stride_size_; /**< Stride size in chunks for sequential pattern mode only. */
-        
+
+        uint8_t mlp_;
+
         //Power measurement
         std::vector<PowerReader*> dram_power_readers_; /**< The power reading objects for measuring DRAM power on a per-socket basis during the benchmark. */
         std::vector<Thread*> dram_power_threads_; /**< The power reading threads for measuring DRAM power on a per-socket basis during the benchmark. These work with the DRAM power readers. Although they are worker threads, they are not counted as the "official" benchmarking worker threads. */
-        
+
         //Benchmark results
         std::vector<double> metric_on_iter_; /**< Metrics for each iteration of the benchmark. Unit-less because any benchmark can set this metric as needed. It is up to the descendant class to interpret units. */
         double mean_metric_; /**< Average metric over all iterations. Unit-less because any benchmark can set this metric as needed. It is up to the descendant class to interpret units. */

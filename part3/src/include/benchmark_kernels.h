@@ -1,7 +1,7 @@
 /* The MIT License (MIT)
  *
  * Copyright (c) 2014 Microsoft
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -25,7 +25,7 @@
 
 /**
  * @file
- * 
+ *
  * @brief Header file for benchmark kernel functions for doing the actual work we care about. :)
  */
 
@@ -41,10 +41,10 @@
 
 namespace xmem {
 
-    
+
     typedef int32_t(*SequentialFunction)(void*, void*);
-    typedef int32_t(*RandomFunction)(uintptr_t*, uintptr_t**, size_t); 
-    
+    typedef int32_t(*RandomFunction)(uintptr_t*, uintptr_t**, size_t, uint8_t);
+
     /**
      * @brief Determines which sequential memory access kernel to use based on the read/write mode, chunk size, and stride size.
      * @param rw_mode Read/write mode.
@@ -55,7 +55,7 @@ namespace xmem {
      * @returns True on success.
      */
     bool determine_sequential_kernel(rw_mode_t rw_mode, chunk_size_t chunk_size, int32_t stride_size, SequentialFunction* kernel_function, SequentialFunction* dummy_kernel_function);
-    
+
     /**
      * @brief Determines which random memory access kernel to use based on the read/write mode, chunk size, and stride size.
      * @param rw_mode Read/write mode.
@@ -88,7 +88,7 @@ namespace xmem {
      * @param len The number of fake pointer deferences. May be unused.
      * @returns Undefined.
      */
-    int32_t dummy_chasePointers(uintptr_t*, uintptr_t**, size_t len);
+    int32_t dummy_chasePointers(uintptr_t*, uintptr_t**, size_t len, uint8_t mlp);
 
     /* ------------------------------------------------------------------------- */
     /* --------------------- CORE BENCHMARK ROUTINES --------------------------- */
@@ -101,10 +101,10 @@ namespace xmem {
      * @param len The number of pointers to deference in a chain-like fashion.
      * @returns Undefined.
      */
-    int32_t chasePointers(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len);
-    
-    
-    
+    int32_t chasePointers(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len, uint8_t mlp);
+
+
+
     /***********************************************************************
      ***********************************************************************
      ******************* THROUGHPUT-RELATED BENCHMARK KERNELS **************
@@ -627,7 +627,7 @@ namespace xmem {
      * @param len The number of pointers to deference in a chain-like fashion.
      * @returns Undefined.
      */
-    int32_t dummy_randomLoop_Word64(uintptr_t*, uintptr_t**, size_t len);
+    int32_t dummy_randomLoop_Word64(uintptr_t*, uintptr_t**, size_t len, uint8_t mlp);
 #endif
 
 #ifdef HAS_WORD_128
@@ -856,7 +856,7 @@ namespace xmem {
      */
     int32_t revSequentialWrite_Word512(void* start_address, void* end_address);
 #endif
-    
+
     /* ------------ STRIDE 2 READ --------------*/
 
     /**
@@ -1661,7 +1661,7 @@ namespace xmem {
      * @param len The number of pointers to deference in a chain-like fashion.
      * @returns Undefined.
      */
-    int32_t randomRead_Word64(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len);
+    int32_t randomRead_Word64(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len, uint8_t mlp);
 #endif
 
 #ifdef HAS_WORD_128
@@ -1702,7 +1702,7 @@ namespace xmem {
     //32-bit machines only
 #ifndef HAS_WORD_64
     /**
-     * @brief Walks over the allocated memory in random order by chasing 32-bit pointers. A pointer is read and written back with the same value before chasing to the next pointer. Thus, each memory address is a read followed by immediate write operation. 
+     * @brief Walks over the allocated memory in random order by chasing 32-bit pointers. A pointer is read and written back with the same value before chasing to the next pointer. Thus, each memory address is a read followed by immediate write operation.
      * @param first_address Starting address to deference.
      * @param last_touched_address The last visited address.
      * @param len The number of pointers to deference in a chain-like fashion.
@@ -1713,18 +1713,18 @@ namespace xmem {
 
 #ifdef HAS_WORD_64
     /**
-     * @brief Walks over the allocated memory in random order by chasing 64-bit pointers. A pointer is read and written back with the same value before chasing to the next pointer. Thus, each memory address is a read followed by immediate write operation. 
+     * @brief Walks over the allocated memory in random order by chasing 64-bit pointers. A pointer is read and written back with the same value before chasing to the next pointer. Thus, each memory address is a read followed by immediate write operation.
      * @param first_address Starting address to deference.
      * @param last_touched_address The last visited address.
      * @param len The number of pointers to deference in a chain-like fashion.
      * @returns Undefined.
      */
-    int32_t randomWrite_Word64(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len);
+    int32_t randomWrite_Word64(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len, uint8_t mlp);
 #endif
 
 #ifdef HAS_WORD_128
     /**
-     * @brief Walks over the allocated memory in random order by chasing 64-bit pointers embedded within 128-bit words. A 128-bit word is read and written back with the same value before chasing to the next location extracted as a 64-bit address in the 128-bit word. Thus, each memory address is a read followed by immediate write operation as well as a vector word extraction. 
+     * @brief Walks over the allocated memory in random order by chasing 64-bit pointers embedded within 128-bit words. A 128-bit word is read and written back with the same value before chasing to the next location extracted as a 64-bit address in the 128-bit word. Thus, each memory address is a read followed by immediate write operation as well as a vector word extraction.
      * @param first_address Starting address to deference.
      * @param last_touched_address The last visited address.
      * @param len The number of pointers to deference in a chain-like fashion.
@@ -1735,7 +1735,7 @@ namespace xmem {
 
 #ifdef HAS_WORD_256
     /**
-     * @brief Walks over the allocated memory in random order by chasing 64-bit pointers embedded within 256-bit words. A 256-bit word is read and written back with the same value before chasing to the next location extracted as a 64-bit address in the 256-bit word. Thus, each memory address is a read followed by immediate write operation as well as a vector word extraction. 
+     * @brief Walks over the allocated memory in random order by chasing 64-bit pointers embedded within 256-bit words. A 256-bit word is read and written back with the same value before chasing to the next location extracted as a 64-bit address in the 256-bit word. Thus, each memory address is a read followed by immediate write operation as well as a vector word extraction.
      * @param first_address Starting address to deference.
      * @param last_touched_address The last visited address.
      * @param len The number of pointers to deference in a chain-like fashion.
@@ -1746,7 +1746,7 @@ namespace xmem {
 
 #ifdef HAS_WORD_512
     /**
-     * @brief Walks over the allocated memory in random order by chasing 64-bit pointers embedded within 512-bit words. A 512-bit word is read and written back with the same value before chasing to the next location extracted as a 64-bit address in the 512-bit word. Thus, each memory address is a read followed by immediate write operation as well as a vector word extraction. 
+     * @brief Walks over the allocated memory in random order by chasing 64-bit pointers embedded within 512-bit words. A 512-bit word is read and written back with the same value before chasing to the next location extracted as a 64-bit address in the 512-bit word. Thus, each memory address is a read followed by immediate write operation as well as a vector word extraction.
      * @param first_address Starting address to deference.
      * @param last_touched_address The last visited address.
      * @param len The number of pointers to deference in a chain-like fashion.

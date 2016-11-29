@@ -403,6 +403,9 @@ namespace xmem {
 
         bool useMlp32() const { return use_mlp_32_; }
 
+        //TODOJ: wrong? uint8_t getMlp();
+        uint8_t getMlp() const { return mlp_; }
+
     private:
         /**
          * @brief Inspects a command line option (switch) to see if it occurred more than once, and warns the user if this is the case. The program only uses the first occurrence of any switch.
@@ -468,6 +471,7 @@ namespace xmem {
         bool use_mlp_8_; /**< If true, use an MLP of 8 in relevant benchmarks. */
         bool use_mlp_16_; /**< If true, use an MLP of 16 in relevant benchmarks. */
         bool use_mlp_32_; /**< If true, use an MLP of 32 in relevant benchmarks. */
+        uint8_t mlp_;
     };
 };
 

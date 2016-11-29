@@ -1,7 +1,7 @@
 /* The MIT License (MIT)
  *
  * Copyright (c) 2014 Microsoft
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -25,7 +25,7 @@
 
 /**
  * @file
- * 
+ *
  * @brief Implementation file for the BenchmarkManager class.
  */
 
@@ -93,11 +93,11 @@ BenchmarkManager::BenchmarkManager(
     //Set up DRAM power measurement
     for (uint32_t i = 0; i < g_num_physical_packages; i++) { //FIXME: this assumes that each physical package has a DRAM power measurement capability
         std::string power_obj_name = static_cast<std::ostringstream*>(&(std::ostringstream() << "Socket " << i << " DRAM"))->str();
-        
+
 #ifdef _WIN32
 #ifndef ARCH_ARM //lacking library support for Windows on ARM
         //Put the thread on the last logical CPU in each NUMA node.
-        dram_power_readers_.push_back(new WindowsDRAMPowerReader(cpu_id_in_numa_node(i,g_num_logical_cpus / g_num_numa_nodes - 1), POWER_SAMPLING_PERIOD_MS, 1, power_obj_name, cpu_id_in_numa_node(i,g_num_logical_cpus / g_num_numa_nodes - 1))); 
+        dram_power_readers_.push_back(new WindowsDRAMPowerReader(cpu_id_in_numa_node(i,g_num_logical_cpus / g_num_numa_nodes - 1), POWER_SAMPLING_PERIOD_MS, 1, power_obj_name, cpu_id_in_numa_node(i,g_num_logical_cpus / g_num_numa_nodes - 1)));
 #else
         dram_power_readers_.push_back(NULL);
 #endif
@@ -160,7 +160,7 @@ BenchmarkManager::~BenchmarkManager() {
             else
 #endif
 #ifdef HAS_NUMA
-                numa_free(mem_arrays_[i], mem_array_lens_[i]); 
+                numa_free(mem_arrays_[i], mem_array_lens_[i]);
 #else
                 free(orig_malloc_addr_); //this is somewhat of a band-aid
 #endif
@@ -191,9 +191,9 @@ bool BenchmarkManager::runThroughputBenchmarks() {
     }
 
     for (uint32_t i = 0; i < tp_benchmarks_.size(); i++) {
-        tp_benchmarks_[i]->run(); 
+        tp_benchmarks_[i]->run();
         tp_benchmarks_[i]->reportResults(); //to console
-        
+
         //Write to results file if necessary
         if (config_.useOutputFile()) {
             results_file_ << tp_benchmarks_[i]->getName() << ",";
@@ -305,9 +305,9 @@ bool BenchmarkManager::runLatencyBenchmarks() {
     }
 
     for (uint32_t i = 0; i < lat_benchmarks_.size(); i++) {
-        lat_benchmarks_[i]->run(); 
+        lat_benchmarks_[i]->run();
         lat_benchmarks_[i]->reportResults(); //to console
-        
+
         //Write to results file if necessary
         if (config_.useOutputFile()) {
             results_file_ << lat_benchmarks_[i]->getName() << ",";
@@ -378,7 +378,7 @@ bool BenchmarkManager::runLatencyBenchmarks() {
                         results_file_ << "UNKNOWN" << ",";
                         break;
                 }
-            
+
                 results_file_ << lat_benchmarks_[i]->getStrideSize() << ",";
             }
 
@@ -422,7 +422,7 @@ void BenchmarkManager::setupWorkingSets(size_t working_set_size) {
     //Allocate memory in each NUMA node to be tested
 
     //We reserve the space for these, but that doesn't mean they will all be used.
-    mem_arrays_.resize(g_num_numa_nodes); 
+    mem_arrays_.resize(g_num_numa_nodes);
     mem_array_lens_.resize(g_num_numa_nodes);
 
     for (auto it = memory_numa_node_affinities_.cbegin(); it != memory_numa_node_affinities_.cend(); it++) {
@@ -435,11 +435,11 @@ void BenchmarkManager::setupWorkingSets(size_t working_set_size) {
             //For large pages, working set size could be less than a single large page. So let's allocate the right amount of memory, which is the working set size rounded up to nearest large page, which could be more than we actually use.
             if (config_.getNumWorkerThreads() * working_set_size < g_large_page_size)
                 allocation_size = g_large_page_size;
-            else { 
+            else {
                 remainder = (config_.getNumWorkerThreads() * working_set_size) % g_large_page_size;
                 allocation_size = (config_.getNumWorkerThreads() * working_set_size) + remainder;
             }
-            
+
 #ifdef _WIN32
             //Make sure we have necessary privileges
             HANDLE hToken;
@@ -452,16 +452,16 @@ void BenchmarkManager::setupWorkingSets(size_t working_set_size) {
                 exit(-1);
             }
             CloseHandle(hToken);
-            
+
             mem_arrays_[numa_node] = VirtualAllocExNuma(GetCurrentProcess(), NULL, allocation_size, MEM_COMMIT | MEM_RESERVE | MEM_LARGE_PAGES, PAGE_READWRITE, numa_node); //Windows NUMA allocation. Make the allocation one page bigger than necessary so that we can do alignment.
 #endif
 #ifdef __gnu_linux__
-            mem_arrays_[numa_node] = get_huge_pages(allocation_size, GHP_DEFAULT); 
+            mem_arrays_[numa_node] = get_huge_pages(allocation_size, GHP_DEFAULT);
 #endif
         } else { //Non-large pages (nominal case)
 #endif
             //Under normal (not large-page) operation, working set size is a multiple of regular pages.
-            allocation_size = config_.getNumWorkerThreads() * working_set_size + g_page_size; 
+            allocation_size = config_.getNumWorkerThreads() * working_set_size + g_page_size;
 #ifdef _WIN32
             mem_arrays_[numa_node] = VirtualAllocExNuma(GetCurrentProcess(), NULL, allocation_size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE, numa_node); //Windows NUMA allocation. Make the allocation one page bigger than necessary so that we can do alignment.
 #endif
@@ -478,7 +478,7 @@ void BenchmarkManager::setupWorkingSets(size_t working_set_size) {
 #ifdef HAS_LARGE_PAGES
         }
 #endif
-        
+
         if (mem_arrays_[numa_node] != nullptr)
             mem_array_lens_[numa_node] = config_.getNumWorkerThreads() * working_set_size;
         else {
@@ -500,7 +500,7 @@ void BenchmarkManager::setupWorkingSets(size_t working_set_size) {
             mask = static_cast<uintptr_t>(g_page_size)-1; //e.g. 4095 bytes
         uintptr_t tmp_ptr = reinterpret_cast<uintptr_t>(mem_arrays_[numa_node]);
         uintptr_t aligned_addr = (tmp_ptr + mask) & ~mask; //add one page to the address, then truncate least significant bits of address to be page aligned.
-        mem_arrays_[numa_node] = reinterpret_cast<void*>(aligned_addr); 
+        mem_arrays_[numa_node] = reinterpret_cast<void*>(aligned_addr);
 
         if (g_verbose) {
             std::cout << " --- ALIGNED --> ";
@@ -519,22 +519,22 @@ bool BenchmarkManager::buildBenchmarks() {
     //Put the enumerations into vectors to make constructing benchmarks more loopable
     std::vector<chunk_size_t> chunks;
     if (config_.useChunk32b())
-        chunks.push_back(CHUNK_32b); 
+        chunks.push_back(CHUNK_32b);
 #ifdef HAS_WORD_64
     if (config_.useChunk64b())
-        chunks.push_back(CHUNK_64b); 
+        chunks.push_back(CHUNK_64b);
 #endif
 #ifdef HAS_WORD_128
     if (config_.useChunk128b())
-        chunks.push_back(CHUNK_128b); 
+        chunks.push_back(CHUNK_128b);
 #endif
 #ifdef HAS_WORD_256
     if (config_.useChunk256b())
-        chunks.push_back(CHUNK_256b); 
+        chunks.push_back(CHUNK_256b);
 #endif
 #ifdef HAS_WORD_512
     if (config_.useChunk512b())
-        chunks.push_back(CHUNK_512b); 
+        chunks.push_back(CHUNK_512b);
 #endif
 
     std::vector<rw_mode_t> rws;
@@ -542,7 +542,7 @@ bool BenchmarkManager::buildBenchmarks() {
         rws.push_back(READ);
     if (config_.useWrites())
         rws.push_back(WRITE);
-    
+
     std::vector<int32_t> strides;
     if (config_.useStrideP1())
         strides.push_back(1);
@@ -565,6 +565,43 @@ bool BenchmarkManager::buildBenchmarks() {
     if (config_.useStrideN16())
         strides.push_back(-16);
 
+/* //TODOJ: I think I can replace this with my Configurator::getMlp()
+    uint8_t mlp = 1;
+    if (config_.useMlp1())
+        mlp = 1;
+    if (config_.useMlp2())
+        mlp = 2;
+    if (config_.useMlp4())
+        mlp = 4;
+    if (config_.useMlp6())
+        mlp = 6;
+    if (config_.useMlp8())
+        mlp = 8;
+    if (config_.useMlp16())
+        mlp = 16;
+    if (config_.useMlp32())
+        mlp = 32;
+*/
+    uint8_t mlp = config_.getMlp();
+
+/*//TODOJ: don't think this is right, but mlp as a vector:
+    std::vector<uint8_t> mlp;
+    if (config_.useMlp1())
+        mlp.push_back(1);
+    if (config_.useMlp2())
+        mlp.push_back(2);
+    if (config_.useMlp4())
+        mlp.push_back(4);
+    if (config_.useMlp6())
+        mlp.push_back(6);
+    if (config_.useMlp8())
+        mlp.push_back(8);
+    if (config_.useMlp16())
+        mlp.push_back(16);
+    if (config_.useMlp32())
+        mlp.push_back(32);
+*/
+
     if (g_verbose)
         std::cout << std::endl;
 
@@ -573,7 +610,7 @@ bool BenchmarkManager::buildBenchmarks() {
     //Build throughput benchmarks. This is a humongous nest of for loops, but rest assured, the range of each loop should be small enough. The problem is we have many combinations to test.
     for (auto mem_node_it = memory_numa_node_affinities_.cbegin(); mem_node_it != memory_numa_node_affinities_.cend(); mem_node_it++) { //iterate each memory NUMA node
         uint32_t mem_node = *mem_node_it;
-        void* mem_array = mem_arrays_[mem_node];           
+        void* mem_array = mem_arrays_[mem_node];
         size_t mem_array_len = mem_array_lens_[mem_node];
 
         for (auto cpu_node_it = cpu_numa_node_affinities_.cbegin(); cpu_node_it != cpu_numa_node_affinities_.cend(); cpu_node_it++) { //iterate each cpu NUMA node
@@ -590,7 +627,7 @@ bool BenchmarkManager::buildBenchmarks() {
 
                         for (uint32_t stride_index = 0; stride_index < strides.size(); stride_index++) {  //iterate different stride lengths
                             int32_t stride = strides[stride_index];
-                            
+
                             //Add the throughput benchmark
                             benchmark_name = static_cast<std::ostringstream*>(&(std::ostringstream() << "Test #" << g_test_index << "T (Throughput)"))->str();
                             tp_benchmarks_.push_back(new ThroughputBenchmark(mem_array,
@@ -603,13 +640,14 @@ bool BenchmarkManager::buildBenchmarks() {
                                                                          rw,
                                                                          chunk,
                                                                          stride,
+                                                                         mlp,
                                                                          dram_power_readers_,
                                                                          benchmark_name));
                             if (tp_benchmarks_[tp_benchmarks_.size()-1] == NULL) {
                                 std::cerr << "ERROR: Failed to build a ThroughputBenchmark!" << std::endl;
                                 return false;
                             }
-        
+
                             //Add the latency benchmark
 
                             //Special case: number of worker threads is 1, only need 1 latency thread in general to do unloaded latency tests.
@@ -625,6 +663,7 @@ bool BenchmarkManager::buildBenchmarks() {
                                                                                 rw,
                                                                                 chunk,
                                                                                 stride,
+                                                                                mlp,
                                                                                 dram_power_readers_,
                                                                                 benchmark_name));
                                 if (lat_benchmarks_[lat_benchmarks_.size()-1] == NULL) {
@@ -639,7 +678,7 @@ bool BenchmarkManager::buildBenchmarks() {
                     }
                 }
             }
-            
+
             if (config_.useRandomAccessPattern()) {
                 //DO RANDOM TESTS
                 for (uint32_t rw_index = 0; rw_index < rws.size(); rw_index++) { //iterate read/write access types
@@ -650,7 +689,7 @@ bool BenchmarkManager::buildBenchmarks() {
 
                         if (chunk == CHUNK_32b) //Special case: random load workers cannot use 32-bit chunks, so skip this benchmark combination
                             continue;
-                        
+
                         //Add the throughput benchmark
                         benchmark_name = static_cast<std::ostringstream*>(&(std::ostringstream() << "Test #" << g_test_index << "T (Throughput)"))->str();
                         tp_benchmarks_.push_back(new ThroughputBenchmark(mem_array,
@@ -663,13 +702,14 @@ bool BenchmarkManager::buildBenchmarks() {
                                                                           rw,
                                                                           chunk,
                                                                           0,
+                                                                          mlp,
                                                                           dram_power_readers_,
                                                                           benchmark_name));
                         if (tp_benchmarks_[tp_benchmarks_.size()-1] == NULL) {
                             std::cerr << "ERROR: Failed to build a ThroughputBenchmark!" << std::endl;
                             return false;
                         }
-                            
+
                         //Add the latency benchmark
                         //Special case: number of worker threads is 1, only need 1 latency thread in general to do unloaded latency tests.
                         if (config_.getNumWorkerThreads() > 1 || buildLatBench) {
@@ -684,13 +724,14 @@ bool BenchmarkManager::buildBenchmarks() {
                                                                             rw,
                                                                             chunk,
                                                                             0,
+                                                                            mlp,
                                                                             dram_power_readers_,
                                                                             benchmark_name));
                             if (lat_benchmarks_[lat_benchmarks_.size()-1] == NULL) {
                                 std::cerr << "ERROR: Failed to build a LatencyBenchmark!" << std::endl;
                                 return false;
                             }
-                            
+
                             buildLatBench = false; //Wait for next NUMA combo
                         }
 
@@ -700,41 +741,41 @@ bool BenchmarkManager::buildBenchmarks() {
             }
         }
     }
-    
+
     built_benchmarks_ = true;
     return true;
 }
 
 #ifdef EXT_DELAY_INJECTED_LOADED_LATENCY_BENCHMARK
 bool BenchmarkManager::runExtDelayInjectedLoadedLatencyBenchmark() {
-    if (config_.getNumWorkerThreads() < 2) {   
+    if (config_.getNumWorkerThreads() < 2) {
         std::cerr << "ERROR: Number of worker threads must be at least 1." << std::endl;
         return false;
     }
 
     std::vector<DelayInjectedLoadedLatencyBenchmark*> del_lat_benchmarks;
-    
+
     //Put the enumerations into vectors to make constructing benchmarks more loopable
     std::vector<chunk_size_t> chunks;
-    chunks.push_back(CHUNK_32b); 
+    chunks.push_back(CHUNK_32b);
 #ifdef HAS_WORD_64
-    chunks.push_back(CHUNK_64b); 
+    chunks.push_back(CHUNK_64b);
 #endif
 #ifdef HAS_WORD_128
-    chunks.push_back(CHUNK_128b); 
+    chunks.push_back(CHUNK_128b);
 #endif
 #ifdef HAS_WORD_256
-    chunks.push_back(CHUNK_256b); 
+    chunks.push_back(CHUNK_256b);
 #endif
 #ifdef HAS_WORD_512
-    chunks.push_back(CHUNK_512b); 
+    chunks.push_back(CHUNK_512b);
 #endif
 
     //Build benchmarks
     for (auto mem_node_it = memory_numa_node_affinities_.cbegin(); mem_node_it != memory_numa_node_affinities_.cend(); mem_node_it++) { //iterate each memory NUMA node
         uint32_t mem_node = *mem_node_it;
-        
-        void* mem_array = mem_arrays_[mem_node];           
+
+        void* mem_array = mem_arrays_[mem_node];
         size_t mem_array_len = mem_array_lens_[mem_node];
 
         for (auto cpu_node_it = cpu_numa_node_affinities_.cbegin(); cpu_node_it != cpu_numa_node_affinities_.cend(); cpu_node_it++) { //iterate each cpuory NUMA node
@@ -745,9 +786,11 @@ bool BenchmarkManager::runExtDelayInjectedLoadedLatencyBenchmark() {
 
                 uint32_t d = 0;
                 while (d <= 1024) { //Iterate different delay values
-            
+
                     std::string benchmark_name = static_cast<std::ostringstream*>(&(std::ostringstream() << "Test #" << g_test_index++ << "E" << EXT_NUM_DELAY_INJECTED_LOADED_LATENCY_BENCHMARK << " (Extension: Delay-Injected Loaded Latency)"))->str();
-                    
+
+                    uint8_t mlp = config_.getMlp();
+
                     del_lat_benchmarks.push_back(new DelayInjectedLoadedLatencyBenchmark(mem_array,
                                                                              mem_array_len,
                                                                              config_.getIterationsPerTest(),
@@ -755,6 +798,7 @@ bool BenchmarkManager::runExtDelayInjectedLoadedLatencyBenchmark() {
                                                                              mem_node,
                                                                              cpu_node,
                                                                              chunk,
+                                                                             mlp,
                                                                              dram_power_readers_,
                                                                              benchmark_name,
                                                                              d));
@@ -774,9 +818,9 @@ bool BenchmarkManager::runExtDelayInjectedLoadedLatencyBenchmark() {
 
     //Run benchmarks
     for (uint32_t i = 0; i < del_lat_benchmarks.size(); i++) {
-        del_lat_benchmarks[i]->run(); 
+        del_lat_benchmarks[i]->run();
         del_lat_benchmarks[i]->reportResults(); //to console
-        
+
         //Write to results file if necessary
         if (config_.useOutputFile()) {
             results_file_ << del_lat_benchmarks[i]->getName() << ",";
@@ -847,7 +891,7 @@ bool BenchmarkManager::runExtDelayInjectedLoadedLatencyBenchmark() {
                         results_file_ << "UNKNOWN" << ",";
                         break;
                 }
-            
+
                 results_file_ << del_lat_benchmarks[i]->getStrideSize() << ",";
             }
 

@@ -1,7 +1,7 @@
 /* The MIT License (MIT)
  *
  * Copyright (c) 2014 Microsoft
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -25,7 +25,7 @@
 
 /**
  * @file
- * 
+ *
  * @brief Header file for the ThroughputBenchmark class.
  */
 
@@ -61,6 +61,7 @@ namespace xmem {
             rw_mode_t rw_mode,
             chunk_size_t chunk_size,
             int32_t stride_size,
+            uint8_t mlp,
             std::vector<PowerReader*> dram_power_readers,
             std::string name
         );

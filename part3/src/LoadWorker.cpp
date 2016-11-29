@@ -1,7 +1,7 @@
 /* The MIT License (MIT)
  *
  * Copyright (c) 2014 Microsoft
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -25,7 +25,7 @@
 
 /**
  * @file
- * 
+ *
  * @brief Implementation file for the LoadWorker class.
  */
 
@@ -116,7 +116,8 @@ void LoadWorker::run() {
     tick_t target_ticks = g_ticks_per_ms * BENCHMARK_DURATION_MS; //Rough target run duration in ticks
     uint32_t p = 0;
     bytes_per_pass = THROUGHPUT_BENCHMARK_BYTES_PER_PASS;
-    
+    uint8_t mlp = 1;  //TODOJ: This might be wrong! Putting 1 here for now.
+
     //Grab relevant setup state thread-safely and keep it local
     if (acquireLock(-1)) {
         mem_array = mem_array_;
@@ -129,11 +130,11 @@ void LoadWorker::run() {
         kernel_dummy_fptr_ran = kernel_dummy_fptr_ran_;
         start_address = mem_array_;
         end_address = reinterpret_cast<void*>(reinterpret_cast<uint8_t*>(mem_array_)+bytes_per_pass);
-        prime_start_address = mem_array_; 
+        prime_start_address = mem_array_;
         prime_end_address = reinterpret_cast<void*>(reinterpret_cast<uint8_t*>(mem_array_) + len_);
         releaseLock();
     }
-    
+
     //Set processor affinity
     bool locked = lock_thread_to_cpu(cpu_affinity);
     if (!locked)
@@ -170,7 +171,7 @@ void LoadWorker::run() {
             passes+=1024;
         } else { //random function semantics
             start_tick = start_timer();
-            UNROLL1024((*kernel_fptr_ran)(next_address, &next_address, bytes_per_pass);)
+            UNROLL1024((*kernel_fptr_ran)(next_address, &next_address, bytes_per_pass, mlp);)  //TODOJ: mlp here may be wrong!
             stop_tick = stop_timer();
             passes+=1024;
         }
@@ -194,7 +195,7 @@ void LoadWorker::run() {
             p+=1024;
         } else { //random function semantics
             start_tick = start_timer();
-            UNROLL1024((*kernel_dummy_fptr_ran)(next_address, &next_address, bytes_per_pass);)
+            UNROLL1024((*kernel_dummy_fptr_ran)(next_address, &next_address, bytes_per_pass, mlp);)   //TODOJ: mlp here may be wrong!
             stop_tick = stop_timer();
             p+=1024;
         }

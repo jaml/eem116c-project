@@ -1,7 +1,7 @@
 /* The MIT License (MIT)
  *
  * Copyright (c) 2014 Microsoft
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -25,7 +25,7 @@
 
 /**
  * @file
- * 
+ *
  * @brief Implementation file for benchmark kernel functions for doing the actual work we care about. :)
  *
  * Optimization tricks include:
@@ -46,7 +46,7 @@
 #include <random>
 #include <algorithm>
 #include <time.h>
-#if defined(ARCH_INTEL) && (defined(HAS_WORD_128) || defined(HAS_WORD_256) || defined(HAS_WORD_512)) 
+#if defined(ARCH_INTEL) && (defined(HAS_WORD_128) || defined(HAS_WORD_256) || defined(HAS_WORD_512))
 //Intel intrinsics
 #include <emmintrin.h>
 #include <immintrin.h>
@@ -76,7 +76,7 @@ using namespace xmem;
 #endif
 
 
-#if defined(HAS_WORD_512) 
+#if defined(HAS_WORD_512)
 
 #if !defined(ARCH_INTEL_MIC) //MIC (Knight's Corner) has partial ISA overlap with AVX-512. Neither are subsets of the other. What a headache. Knight's Corner also doesn't support legacy SSE or AVX stuff... agh!!!
 #define my_32b_set_512b_word(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) _mm512_set_epi32(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) //AVX-512 intrinsic, corresponds to ??? (pseudo?) instruction. Header: immintrin.h
@@ -158,7 +158,7 @@ ret = scratchptr[0];
 extern "C" int32_t win_x86_64_asm_forwSequentialRead_Word128(Word128_t* first_word, Word128_t* last_word);
 extern "C" int32_t win_x86_64_asm_revSequentialRead_Word128(Word128_t* last_word, Word128_t* first_word);
 extern "C" int32_t win_x86_64_asm_forwSequentialWrite_Word128(Word128_t* first_word, Word128_t* last_word);
-extern "C" int32_t win_x86_64_asm_revSequentialWrite_Word128(Word128_t* last_word, Word128_t* first_word); 
+extern "C" int32_t win_x86_64_asm_revSequentialWrite_Word128(Word128_t* last_word, Word128_t* first_word);
 extern "C" int32_t win_x86_64_asm_forwStride2Read_Word128(Word128_t* first_word, Word128_t* last_word);
 extern "C" int32_t win_x86_64_asm_revStride2Read_Word128(Word128_t* first_word, Word128_t* last_word);
 extern "C" int32_t win_x86_64_asm_forwStride2Write_Word128(Word128_t* first_word, Word128_t* last_word);
@@ -205,7 +205,7 @@ extern "C" int32_t win_x86_64_asm_revStride16Write_Word256(Word256_t* first_word
 #ifdef HAS_WORD_128
 //128-bit
 extern "C" int32_t win_x86_64_asm_dummy_forwSequentialLoop_Word128(Word128_t* first_word, Word128_t* last_word);
-extern "C" int32_t win_x86_64_asm_dummy_revSequentialLoop_Word128(Word128_t* first_word, Word128_t* last_word); 
+extern "C" int32_t win_x86_64_asm_dummy_revSequentialLoop_Word128(Word128_t* first_word, Word128_t* last_word);
 extern "C" int32_t win_x86_64_asm_dummy_forwStride2Loop_Word128(Word128_t* first_word, Word128_t* last_word);
 extern "C" int32_t win_x86_64_asm_dummy_revStride2Loop_Word128(Word128_t* first_word, Word128_t* last_word);
 extern "C" int32_t win_x86_64_asm_dummy_forwStride4Loop_Word128(Word128_t* first_word, Word128_t* last_word);
@@ -732,7 +732,7 @@ bool xmem::determine_sequential_kernel(rw_mode_t rw_mode, chunk_size_t chunk_siz
 
     return false; //shouldn't reach this point
 }
-    
+
 bool xmem::determine_random_kernel(rw_mode_t rw_mode, chunk_size_t chunk_size, RandomFunction* kernel_function, RandomFunction* dummy_kernel_function) {
     switch (rw_mode) {
         case READ:
@@ -863,10 +863,10 @@ bool xmem::build_random_pointer_permutation(void* start_address, void* end_addre
             << "bits for building a random pointer permutation. This should not have happened." << std::endl;
             return false;
     }
-            
+
     std::mt19937_64 gen(time(NULL)); //Mersenne Twister random number generator, seeded at current time
-    
-    //Do a random shuffle of memory pointers. 
+
+    //Do a random shuffle of memory pointers.
     //I had originally used a random Hamiltonian Cycle generator, but this was much slower and aside from
     //rare instances, did not make any difference in random-access performance measurement.
 #ifdef HAS_WORD_64
@@ -899,8 +899,8 @@ bool xmem::build_random_pointer_permutation(void* start_address, void* end_addre
 #else //special case for 32-bit architectures
                 mem_region_base[i*4] = reinterpret_cast<Word32_t>(mem_region_base+(i*4));
                 mem_region_base[(i*4)+1] = 0xFFFFFFFF; //1-fill upper 96 bits
-                mem_region_base[(i*4)+2] = 0xFFFFFFFF; 
-                mem_region_base[(i*4)+3] = 0xFFFFFFFF; 
+                mem_region_base[(i*4)+2] = 0xFFFFFFFF;
+                mem_region_base[(i*4)+3] = 0xFFFFFFFF;
 #endif
             }
             std::shuffle(reinterpret_cast<Word128_t*>(mem_region_base), reinterpret_cast<Word128_t*>(mem_region_base) + num_pointers, gen);
@@ -912,7 +912,7 @@ bool xmem::build_random_pointer_permutation(void* start_address, void* end_addre
 #ifdef HAS_WORD_64
                 mem_region_base[i*4] = reinterpret_cast<Word64_t>(mem_region_base+(i*4));
                 mem_region_base[(i*4)+1] = 0xFFFFFFFFFFFFFFFF; //1-fill upper 192 bits
-                mem_region_base[(i*4)+2] = 0xFFFFFFFFFFFFFFFF; 
+                mem_region_base[(i*4)+2] = 0xFFFFFFFFFFFFFFFF;
                 mem_region_base[(i*4)+3] = 0xFFFFFFFFFFFFFFFF;
 #else //special case for 32-bit architectures
                 mem_region_base[i*8] = reinterpret_cast<Word32_t>(mem_region_base+(i*8));
@@ -934,7 +934,7 @@ bool xmem::build_random_pointer_permutation(void* start_address, void* end_addre
 #ifdef HAS_WORD_64
                 mem_region_base[i*4] = reinterpret_cast<Word64_t>(mem_region_base+(i*4));
                 mem_region_base[(i*4)+1] = 0xFFFFFFFFFFFFFFFF; //1-fill upper 448 bits
-                mem_region_base[(i*4)+2] = 0xFFFFFFFFFFFFFFFF; 
+                mem_region_base[(i*4)+2] = 0xFFFFFFFFFFFFFFFF;
                 mem_region_base[(i*4)+3] = 0xFFFFFFFFFFFFFFFF;
                 mem_region_base[(i*4)+4] = 0xFFFFFFFFFFFFFFFF;
                 mem_region_base[(i*4)+5] = 0xFFFFFFFFFFFFFFFF;
@@ -983,14 +983,14 @@ bool xmem::build_random_pointer_permutation(void* start_address, void* end_addre
 
 /* --------------------- DUMMY BENCHMARK ROUTINES --------------------------- */
 
-int32_t xmem::dummy_chasePointers(uintptr_t*, uintptr_t**, size_t len) {
+int32_t xmem::dummy_chasePointers(uintptr_t*, uintptr_t**, size_t len, uint8_t mlp) {
     volatile uintptr_t placeholder = 0; //Try to defeat compiler optimizations removing this method
     return 0;
 }
 
 /* -------------------- CORE BENCHMARK ROUTINES -------------------------- */
 
-int32_t xmem::chasePointers(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len) {
+int32_t xmem::chasePointers(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len, uint8_t mlp) {
     volatile uintptr_t* p = first_address;
     UNROLL512(p = reinterpret_cast<uintptr_t*>(*p);)
     *last_touched_address = const_cast<uintptr_t*>(p);
@@ -1006,16 +1006,16 @@ int32_t xmem::chasePointers(uintptr_t* first_address, uintptr_t** last_touched_a
 
 /* --------------------- DUMMY BENCHMARK ROUTINES --------------------------- */
 
-int32_t xmem::dummy_empty(void*, void*) { 
+int32_t xmem::dummy_empty(void*, void*) {
     return 0;
 }
-        
+
 /* ------------ SEQUENTIAL LOOP --------------*/
 
 int32_t xmem::dummy_forwSequentialLoop_Word32(void* start_address, void* end_address) {
     volatile int32_t placeholder = 0; //Try our best to defeat compiler optimizations
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(start_address), *endptr = static_cast<Word32_t*>(end_address); wordptr < endptr;) {
-        UNROLL1024(wordptr++;) 
+        UNROLL1024(wordptr++;)
         placeholder = 0;
     }
     return placeholder;
@@ -1025,7 +1025,7 @@ int32_t xmem::dummy_forwSequentialLoop_Word32(void* start_address, void* end_add
 int32_t xmem::dummy_forwSequentialLoop_Word64(void* start_address, void* end_address) {
     volatile int32_t placeholder = 0; //Try our best to defeat compiler optimizations
     for (volatile Word64_t* wordptr = static_cast<Word64_t*>(start_address), *endptr = static_cast<Word64_t*>(end_address); wordptr < endptr;) {
-        UNROLL512(wordptr++;) 
+        UNROLL512(wordptr++;)
         placeholder = 0;
     }
     return placeholder;
@@ -1039,7 +1039,7 @@ int32_t xmem::dummy_forwSequentialLoop_Word128(void* start_address, void* end_ad
 #else
     volatile int32_t placeholder = 0; //Try our best to defeat compiler optimizations
     for (volatile Word128_t* wordptr = static_cast<Word128_t*>(start_address), *endptr = static_cast<Word128_t*>(end_address); wordptr < endptr;) {
-        UNROLL256(wordptr++;) 
+        UNROLL256(wordptr++;)
         placeholder = 0;
     }
     return placeholder;
@@ -1055,7 +1055,7 @@ int32_t xmem::dummy_forwSequentialLoop_Word256(void* start_address, void* end_ad
 #ifdef __gnu_linux__
     volatile int32_t placeholder = 0; //Try our best to defeat compiler optimizations
     for (volatile Word256_t* wordptr = static_cast<Word256_t*>(start_address), *endptr = static_cast<Word256_t*>(end_address); wordptr < endptr;) {
-        UNROLL128(wordptr++;) 
+        UNROLL128(wordptr++;)
         placeholder = 0;
     }
     return placeholder;
@@ -1068,7 +1068,7 @@ int32_t xmem::dummy_forwSequentialLoop_Word256(void* start_address, void* end_ad
 int32_t xmem::dummy_forwSequentialLoop_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::dummy_forwSequentialLoop_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::dummy_forwSequentialLoop_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_dummy_forwSequentialLoop_Word512(static_cast<Word512_t*>(start_address), static_cast<Word512_t*>(end_address));
@@ -1077,7 +1077,7 @@ int32_t __attribute__((optimize("O0"))) xmem::dummy_forwSequentialLoop_Word512(v
 #ifdef __gnu_linux__
     volatile int32_t placeholder = 0; //Try our best to defeat compiler optimizations
     for (Word512_t* wordptr = static_cast<Word512_t*>(start_address), *endptr = static_cast<Word512_t*>(end_address); wordptr < endptr;) {
-        UNROLL64(wordptr++;) 
+        UNROLL64(wordptr++;)
         placeholder = 0;
     }
     return placeholder;
@@ -1085,7 +1085,7 @@ int32_t __attribute__((optimize("O0"))) xmem::dummy_forwSequentialLoop_Word512(v
 }
 #endif
 
-int32_t xmem::dummy_revSequentialLoop_Word32(void* start_address, void* end_address) { 
+int32_t xmem::dummy_revSequentialLoop_Word32(void* start_address, void* end_address) {
     volatile int32_t placeholder = 0; //Try our best to defeat compiler optimizations
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(end_address), *begptr = static_cast<Word32_t*>(start_address); wordptr > begptr;) {
         UNROLL1024(wordptr--;)
@@ -1112,7 +1112,7 @@ int32_t xmem::dummy_revSequentialLoop_Word128(void* start_address, void* end_add
 #endif
     volatile int32_t placeholder = 0; //Try our best to defeat compiler optimizations
     for (volatile Word128_t* wordptr = static_cast<Word128_t*>(end_address), *begptr = static_cast<Word128_t*>(start_address); wordptr > begptr;) {
-        UNROLL256(wordptr--;) 
+        UNROLL256(wordptr--;)
         placeholder = 0;
     }
     return placeholder;
@@ -1127,7 +1127,7 @@ int32_t xmem::dummy_revSequentialLoop_Word256(void* start_address, void* end_add
 #ifdef __gnu_linux__
     volatile int32_t placeholder = 0; //Try our best to defeat compiler optimizations
     for (volatile Word256_t* wordptr = static_cast<Word256_t*>(end_address), *begptr = static_cast<Word256_t*>(start_address); wordptr > begptr;) {
-        UNROLL128(wordptr--;) 
+        UNROLL128(wordptr--;)
         placeholder = 0;
     }
     return placeholder;
@@ -1140,7 +1140,7 @@ int32_t xmem::dummy_revSequentialLoop_Word256(void* start_address, void* end_add
 int32_t xmem::dummy_revSequentialLoop_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::dummy_revSequentialLoop_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::dummy_revSequentialLoop_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_dummy_revSequentialLoop_Word512(static_cast<Word512_t*>(end_address), static_cast<Word512_t*>(start_address));
@@ -1149,7 +1149,7 @@ int32_t __attribute__((optimize("O0"))) xmem::dummy_revSequentialLoop_Word512(vo
 #ifdef __gnu_linux__
     volatile int32_t placeholder = 0; //Try our best to defeat compiler optimizations
     for (Word512_t* wordptr = static_cast<Word512_t*>(end_address), *begptr = static_cast<Word512_t*>(start_address); wordptr > begptr;) {
-        UNROLL64(wordptr--;) 
+        UNROLL64(wordptr--;)
         placeholder = 0;
     }
     return placeholder;
@@ -1160,7 +1160,7 @@ int32_t __attribute__((optimize("O0"))) xmem::dummy_revSequentialLoop_Word512(vo
 /* ------------ STRIDE 2 LOOP --------------*/
 
 int32_t xmem::dummy_forwStride2Loop_Word32(void* start_address, void* end_address) {
-    register Word32_t val; 
+    register Word32_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word32_t);
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(start_address); i < len; i += 512) {
@@ -1173,7 +1173,7 @@ int32_t xmem::dummy_forwStride2Loop_Word32(void* start_address, void* end_addres
 
 #ifdef HAS_WORD_64
 int32_t xmem::dummy_forwStride2Loop_Word64(void* start_address, void* end_address) {
-    register Word64_t val; 
+    register Word64_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word64_t);
     for (volatile Word64_t* wordptr = static_cast<Word64_t*>(start_address); i < len; i += 256) {
@@ -1190,7 +1190,7 @@ int32_t xmem::dummy_forwStride2Loop_Word128(void* start_address, void* end_addre
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_dummy_forwStride2Loop_Word128(static_cast<Word128_t*>(start_address), static_cast<Word128_t*>(end_address));
 #else
-    register Word128_t val; 
+    register Word128_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word128_t);
     for (volatile Word128_t* wordptr = static_cast<Word128_t*>(start_address); i < len; i += 128) {
@@ -1208,7 +1208,7 @@ int32_t xmem::dummy_forwStride2Loop_Word256(void* start_address, void* end_addre
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_dummy_forwStride2Loop_Word256(static_cast<Word256_t*>(start_address), static_cast<Word256_t*>(end_address));
 #else
-    register Word256_t val; 
+    register Word256_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word256_t);
     for (volatile Word256_t* wordptr = static_cast<Word256_t*>(start_address); i < len; i += 64) {
@@ -1226,13 +1226,13 @@ int32_t xmem::dummy_forwStride2Loop_Word256(void* start_address, void* end_addre
 int32_t xmem::dummy_forwStride2Loop_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::dummy_forwStride2Loop_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::dummy_forwStride2Loop_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
 //    return win_x86_64_asm_dummy_forwStride2Loop_Word512(static_cast<Word512_t*>(start_address), static_cast<Word512_t*>(end_address));
     #error 512-bit words are not currently supported on Windows.
 #else
-    register Word512_t val; 
+    register Word512_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word512_t);
     for (Word512_t* wordptr = static_cast<Word512_t*>(start_address); i < len; i += 32) {
@@ -1246,7 +1246,7 @@ int32_t __attribute__((optimize("O0"))) xmem::dummy_forwStride2Loop_Word512(void
 #endif
 
 int32_t xmem::dummy_revStride2Loop_Word32(void* start_address, void* end_address) {
-    register Word32_t val; 
+    register Word32_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word32_t);
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(end_address); i < len; i += 512) {
@@ -1259,7 +1259,7 @@ int32_t xmem::dummy_revStride2Loop_Word32(void* start_address, void* end_address
 
 #ifdef HAS_WORD_64
 int32_t xmem::dummy_revStride2Loop_Word64(void* start_address, void* end_address) {
-    register Word64_t val; 
+    register Word64_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word64_t);
     for (volatile Word64_t* wordptr = static_cast<Word64_t*>(end_address); i < len; i += 256) {
@@ -1276,7 +1276,7 @@ int32_t xmem::dummy_revStride2Loop_Word128(void* start_address, void* end_addres
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_dummy_revStride2Loop_Word128(static_cast<Word128_t*>(end_address), static_cast<Word128_t*>(start_address));
 #else
-    register Word128_t val; 
+    register Word128_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word128_t);
     for (volatile Word128_t* wordptr = static_cast<Word128_t*>(end_address); i < len; i += 128) {
@@ -1290,11 +1290,11 @@ int32_t xmem::dummy_revStride2Loop_Word128(void* start_address, void* end_addres
 #endif
 
 #ifdef HAS_WORD_256
-int32_t xmem::dummy_revStride2Loop_Word256(void* start_address, void* end_address) { 
+int32_t xmem::dummy_revStride2Loop_Word256(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_dummy_revStride2Loop_Word256(static_cast<Word256_t*>(end_address), static_cast<Word256_t*>(start_address));
 #else
-    register Word256_t val; 
+    register Word256_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word256_t);
     for (volatile Word256_t* wordptr = static_cast<Word256_t*>(end_address); i < len; i += 64) {
@@ -1312,13 +1312,13 @@ int32_t xmem::dummy_revStride2Loop_Word256(void* start_address, void* end_addres
 int32_t xmem::dummy_revStride2Loop_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::dummy_revStride2Loop_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::dummy_revStride2Loop_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_dummy_revStride2Loop_Word512(static_cast<Word512_t*>(end_address), static_cast<Word512_t*>(start_address));
 #error 512-bit words are not currently supported on Windows.
 #else
-    register Word512_t val; 
+    register Word512_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word512_t);
     for (Word512_t* wordptr = static_cast<Word512_t*>(end_address); i < len; i += 32) {
@@ -1334,7 +1334,7 @@ int32_t __attribute__((optimize("O0"))) xmem::dummy_revStride2Loop_Word512(void*
 /* ------------ STRIDE 4 LOOP --------------*/
 
 int32_t xmem::dummy_forwStride4Loop_Word32(void* start_address, void* end_address) {
-    register Word32_t val; 
+    register Word32_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word32_t);
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(start_address); i < len; i += 256) {
@@ -1347,7 +1347,7 @@ int32_t xmem::dummy_forwStride4Loop_Word32(void* start_address, void* end_addres
 
 #ifdef HAS_WORD_64
 int32_t xmem::dummy_forwStride4Loop_Word64(void* start_address, void* end_address) {
-    register Word64_t val; 
+    register Word64_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word64_t);
     for (volatile Word64_t* wordptr = static_cast<Word64_t*>(start_address); i < len; i += 128) {
@@ -1364,7 +1364,7 @@ int32_t xmem::dummy_forwStride4Loop_Word128(void* start_address, void* end_addre
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_dummy_forwStride4Loop_Word128(static_cast<Word128_t*>(start_address), static_cast<Word128_t*>(end_address));
 #else
-    register Word128_t val; 
+    register Word128_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word128_t);
     for (volatile Word128_t* wordptr = static_cast<Word128_t*>(start_address); i < len; i += 64) {
@@ -1382,7 +1382,7 @@ int32_t xmem::dummy_forwStride4Loop_Word256(void* start_address, void* end_addre
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_dummy_forwStride4Loop_Word256(static_cast<Word256_t*>(start_address), static_cast<Word256_t*>(end_address));
 #else
-    register Word256_t val; 
+    register Word256_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word256_t);
     for (volatile Word256_t* wordptr = static_cast<Word256_t*>(start_address); i < len; i += 32) {
@@ -1400,13 +1400,13 @@ int32_t xmem::dummy_forwStride4Loop_Word256(void* start_address, void* end_addre
 int32_t xmem::dummy_forwStride4Loop_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::dummy_forwStride4Loop_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::dummy_forwStride4Loop_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_dummy_forwStride4Loop_Word512(static_cast<Word512_t*>(start_address), static_cast<Word512_t*>(end_address));
 #error 512-bit words are not currently supported on Windows.
 #else
-    register Word512_t val; 
+    register Word512_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word512_t);
     for (Word512_t* wordptr = static_cast<Word512_t*>(start_address); i < len; i += 16) {
@@ -1420,7 +1420,7 @@ int32_t __attribute__((optimize("O0"))) xmem::dummy_forwStride4Loop_Word512(void
 #endif
 
 int32_t xmem::dummy_revStride4Loop_Word32(void* start_address, void* end_address) {
-    register Word32_t val; 
+    register Word32_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word32_t);
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(end_address); i < len; i += 256) {
@@ -1433,7 +1433,7 @@ int32_t xmem::dummy_revStride4Loop_Word32(void* start_address, void* end_address
 
 #ifdef HAS_WORD_64
 int32_t xmem::dummy_revStride4Loop_Word64(void* start_address, void* end_address) {
-    register Word64_t val; 
+    register Word64_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word64_t);
     for (volatile Word64_t* wordptr = static_cast<Word64_t*>(end_address); i < len; i += 128) {
@@ -1450,7 +1450,7 @@ int32_t xmem::dummy_revStride4Loop_Word128(void* start_address, void* end_addres
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_dummy_revStride4Loop_Word128(static_cast<Word128_t*>(end_address), static_cast<Word128_t*>(start_address));
 #else
-    register Word128_t val; 
+    register Word128_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word128_t);
     for (volatile Word128_t* wordptr = static_cast<Word128_t*>(end_address); i < len; i += 64) {
@@ -1468,7 +1468,7 @@ int32_t xmem::dummy_revStride4Loop_Word256(void* start_address, void* end_addres
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_dummy_revStride4Loop_Word256(static_cast<Word256_t*>(end_address), static_cast<Word256_t*>(start_address));
 #else
-    register Word256_t val; 
+    register Word256_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word256_t);
     for (volatile Word256_t* wordptr = static_cast<Word256_t*>(end_address); i < len; i += 32) {
@@ -1486,13 +1486,13 @@ int32_t xmem::dummy_revStride4Loop_Word256(void* start_address, void* end_addres
 int32_t xmem::dummy_revStride4Loop_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::dummy_revStride4Loop_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::dummy_revStride4Loop_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_dummy_revStride4Loop_Word512(static_cast<Word512_t*>(end_address), static_cast<Word512_t*>(start_address));
     #error 512-bit words are not currently supported on Windows.
 #else
-    register Word512_t val; 
+    register Word512_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word512_t);
     for (Word512_t* wordptr = static_cast<Word512_t*>(end_address); i < len; i += 16) {
@@ -1508,7 +1508,7 @@ int32_t __attribute__((optimize("O0"))) xmem::dummy_revStride4Loop_Word512(void*
 /* ------------ STRIDE 8 LOOP --------------*/
 
 int32_t xmem::dummy_forwStride8Loop_Word32(void* start_address, void* end_address) {
-    register Word32_t val; 
+    register Word32_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word32_t);
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(start_address); i < len; i += 128) {
@@ -1521,7 +1521,7 @@ int32_t xmem::dummy_forwStride8Loop_Word32(void* start_address, void* end_addres
 
 #ifdef HAS_WORD_64
 int32_t xmem::dummy_forwStride8Loop_Word64(void* start_address, void* end_address) {
-    register Word64_t val; 
+    register Word64_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word64_t);
     for (volatile Word64_t* wordptr = static_cast<Word64_t*>(start_address); i < len; i += 64) {
@@ -1538,7 +1538,7 @@ int32_t xmem::dummy_forwStride8Loop_Word128(void* start_address, void* end_addre
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_dummy_forwStride8Loop_Word128(static_cast<Word128_t*>(start_address), static_cast<Word128_t*>(end_address));
 #else
-    register Word128_t val; 
+    register Word128_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word128_t);
     for (volatile Word128_t* wordptr = static_cast<Word128_t*>(start_address); i < len; i += 32) {
@@ -1556,7 +1556,7 @@ int32_t xmem::dummy_forwStride8Loop_Word256(void* start_address, void* end_addre
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_dummy_forwStride8Loop_Word256(static_cast<Word256_t*>(start_address), static_cast<Word256_t*>(end_address));
 #else
-    register Word256_t val; 
+    register Word256_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word256_t);
     for (volatile Word256_t* wordptr = static_cast<Word256_t*>(start_address); i < len; i += 16) {
@@ -1574,13 +1574,13 @@ int32_t xmem::dummy_forwStride8Loop_Word256(void* start_address, void* end_addre
 int32_t xmem::dummy_forwStride8Loop_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::dummy_forwStride8Loop_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::dummy_forwStride8Loop_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_dummy_forwStride8Loop_Word512(static_cast<Word512_t*>(start_address), static_cast<Word512_t*>(end_address));
     #error 512-bit words are not currently supported on Windows.
 #else
-    register Word512_t val; 
+    register Word512_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word512_t);
     for (Word512_t* wordptr = static_cast<Word512_t*>(start_address); i < len; i += 8) {
@@ -1593,8 +1593,8 @@ int32_t __attribute__((optimize("O0"))) xmem::dummy_forwStride8Loop_Word512(void
 }
 #endif
 
-int32_t xmem::dummy_revStride8Loop_Word32(void* start_address, void* end_address) { 
-    register Word32_t val; 
+int32_t xmem::dummy_revStride8Loop_Word32(void* start_address, void* end_address) {
+    register Word32_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word32_t);
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(end_address); i < len; i += 128) {
@@ -1606,8 +1606,8 @@ int32_t xmem::dummy_revStride8Loop_Word32(void* start_address, void* end_address
 }
 
 #ifdef HAS_WORD_64
-int32_t xmem::dummy_revStride8Loop_Word64(void* start_address, void* end_address) { 
-    register Word64_t val; 
+int32_t xmem::dummy_revStride8Loop_Word64(void* start_address, void* end_address) {
+    register Word64_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word64_t);
     for (volatile Word64_t* wordptr = static_cast<Word64_t*>(end_address); i < len; i += 64) {
@@ -1620,11 +1620,11 @@ int32_t xmem::dummy_revStride8Loop_Word64(void* start_address, void* end_address
 #endif
 
 #ifdef HAS_WORD_128
-int32_t xmem::dummy_revStride8Loop_Word128(void* start_address, void* end_address) { 
+int32_t xmem::dummy_revStride8Loop_Word128(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_dummy_revStride8Loop_Word128(static_cast<Word128_t*>(end_address), static_cast<Word128_t*>(start_address));
 #else
-    register Word128_t val; 
+    register Word128_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word128_t);
     for (volatile Word128_t* wordptr = static_cast<Word128_t*>(end_address); i < len; i += 32) {
@@ -1638,11 +1638,11 @@ int32_t xmem::dummy_revStride8Loop_Word128(void* start_address, void* end_addres
 #endif
 
 #ifdef HAS_WORD_256
-int32_t xmem::dummy_revStride8Loop_Word256(void* start_address, void* end_address) { 
+int32_t xmem::dummy_revStride8Loop_Word256(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_dummy_revStride8Loop_Word256(static_cast<Word256_t*>(end_address), static_cast<Word256_t*>(start_address));
 #else
-    register Word256_t val; 
+    register Word256_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word256_t);
     for (volatile Word256_t* wordptr = static_cast<Word256_t*>(end_address); i < len; i += 16) {
@@ -1660,13 +1660,13 @@ int32_t xmem::dummy_revStride8Loop_Word256(void* start_address, void* end_addres
 int32_t xmem::dummy_revStride8Loop_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::dummy_revStride8Loop_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::dummy_revStride8Loop_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_dummy_revStride8Loop_Word512(static_cast<Word512_t*>(end_address), static_cast<Word512_t*>(start_address));
     #error 512-bit words are not currently supported on Windows.
 #else
-    register Word512_t val; 
+    register Word512_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word512_t);
     for (volatile Word512_t* wordptr = static_cast<Word512_t*>(end_address); i < len; i += 8) {
@@ -1681,8 +1681,8 @@ int32_t __attribute__((optimize("O0"))) xmem::dummy_revStride8Loop_Word512(void*
 
 /* ------------ STRIDE 16 LOOP --------------*/
 
-int32_t xmem::dummy_forwStride16Loop_Word32(void* start_address, void* end_address) { 
-    register Word32_t val; 
+int32_t xmem::dummy_forwStride16Loop_Word32(void* start_address, void* end_address) {
+    register Word32_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word32_t);
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(start_address); i < len; i += 64) {
@@ -1694,8 +1694,8 @@ int32_t xmem::dummy_forwStride16Loop_Word32(void* start_address, void* end_addre
 }
 
 #ifdef HAS_WORD_64
-int32_t xmem::dummy_forwStride16Loop_Word64(void* start_address, void* end_address) { 
-    register Word64_t val; 
+int32_t xmem::dummy_forwStride16Loop_Word64(void* start_address, void* end_address) {
+    register Word64_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word64_t);
     for (volatile Word64_t* wordptr = static_cast<Word64_t*>(start_address); i < len; i += 32) {
@@ -1708,11 +1708,11 @@ int32_t xmem::dummy_forwStride16Loop_Word64(void* start_address, void* end_addre
 #endif
 
 #ifdef HAS_WORD_128
-int32_t xmem::dummy_forwStride16Loop_Word128(void* start_address, void* end_address) { 
+int32_t xmem::dummy_forwStride16Loop_Word128(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_dummy_forwStride16Loop_Word128(static_cast<Word128_t*>(start_address), static_cast<Word128_t*>(end_address));
 #else
-    register Word128_t val; 
+    register Word128_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word128_t);
     for (volatile Word128_t* wordptr = static_cast<Word128_t*>(start_address); i < len; i += 16) {
@@ -1726,11 +1726,11 @@ int32_t xmem::dummy_forwStride16Loop_Word128(void* start_address, void* end_addr
 #endif
 
 #ifdef HAS_WORD_256
-int32_t xmem::dummy_forwStride16Loop_Word256(void* start_address, void* end_address) { 
+int32_t xmem::dummy_forwStride16Loop_Word256(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_dummy_forwStride16Loop_Word256(static_cast<Word256_t*>(start_address), static_cast<Word256_t*>(end_address));
 #else
-    register Word256_t val; 
+    register Word256_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word256_t);
     for (volatile Word256_t* wordptr = static_cast<Word256_t*>(start_address); i < len; i += 8) {
@@ -1748,13 +1748,13 @@ int32_t xmem::dummy_forwStride16Loop_Word256(void* start_address, void* end_addr
 int32_t xmem::dummy_forwStride16Loop_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::dummy_forwStride16Loop_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::dummy_forwStride16Loop_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_dummy_forwStride16Loop_Word512(static_cast<Word512_t*>(start_address), static_cast<Word512_t*>(end_address));
     #error 512-bit words are not currently supported on Windows.
 #else
-    register Word512_t val; 
+    register Word512_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word512_t);
     for (volatile Word512_t* wordptr = static_cast<Word512_t*>(start_address); i < len; i += 4) {
@@ -1767,8 +1767,8 @@ int32_t __attribute__((optimize("O0"))) xmem::dummy_forwStride16Loop_Word512(voi
 }
 #endif
 
-int32_t xmem::dummy_revStride16Loop_Word32(void* start_address, void* end_address) { 
-    register Word32_t val; 
+int32_t xmem::dummy_revStride16Loop_Word32(void* start_address, void* end_address) {
+    register Word32_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word32_t);
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(end_address); i < len; i += 64) {
@@ -1780,8 +1780,8 @@ int32_t xmem::dummy_revStride16Loop_Word32(void* start_address, void* end_addres
 }
 
 #ifdef HAS_WORD_64
-int32_t xmem::dummy_revStride16Loop_Word64(void* start_address, void* end_address) { 
-    register Word64_t val; 
+int32_t xmem::dummy_revStride16Loop_Word64(void* start_address, void* end_address) {
+    register Word64_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word64_t);
     for (volatile Word64_t* wordptr = static_cast<Word64_t*>(end_address); i < len; i += 32) {
@@ -1794,11 +1794,11 @@ int32_t xmem::dummy_revStride16Loop_Word64(void* start_address, void* end_addres
 #endif
 
 #ifdef HAS_WORD_128
-int32_t xmem::dummy_revStride16Loop_Word128(void* start_address, void* end_address) { 
+int32_t xmem::dummy_revStride16Loop_Word128(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_dummy_revStride16Loop_Word128(static_cast<Word128_t*>(end_address), static_cast<Word128_t*>(start_address));
 #else
-    register Word128_t val; 
+    register Word128_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word128_t);
     for (volatile Word128_t* wordptr = static_cast<Word128_t*>(end_address); i < len; i += 16) {
@@ -1812,11 +1812,11 @@ int32_t xmem::dummy_revStride16Loop_Word128(void* start_address, void* end_addre
 #endif
 
 #ifdef HAS_WORD_256
-int32_t xmem::dummy_revStride16Loop_Word256(void* start_address, void* end_address) { 
+int32_t xmem::dummy_revStride16Loop_Word256(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_dummy_revStride16Loop_Word256(static_cast<Word256_t*>(end_address), static_cast<Word256_t*>(start_address));
 #else
-    register Word256_t val; 
+    register Word256_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word256_t);
     for (volatile Word256_t* wordptr = static_cast<Word256_t*>(end_address); i < len; i += 8) {
@@ -1834,13 +1834,13 @@ int32_t xmem::dummy_revStride16Loop_Word256(void* start_address, void* end_addre
 int32_t xmem::dummy_revStride16Loop_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::dummy_revStride16Loop_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::dummy_revStride16Loop_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_dummy_revStride16Loop_Word512(static_cast<Word512_t*>(end_address), static_cast<Word512_t*>(start_address));
     #error 512-bit words are not supported on Windows.
 #else
-    register Word512_t val; 
+    register Word512_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word512_t);
     for (volatile Word512_t* wordptr = static_cast<Word512_t*>(end_address); i < len; i += 4) {
@@ -1863,7 +1863,7 @@ int32_t xmem::dummy_randomLoop_Word32(uintptr_t*, uintptr_t**, size_t len) {
 #endif
 
 #ifdef HAS_WORD_64
-int32_t xmem::dummy_randomLoop_Word64(uintptr_t*, uintptr_t**, size_t len) {
+int32_t xmem::dummy_randomLoop_Word64(uintptr_t*, uintptr_t**, size_t len, uint8_t mlp) {
     volatile uintptr_t* placeholder = NULL; //Try to defeat compiler optimizations removing this method
     return 0;
 }
@@ -1937,7 +1937,7 @@ int32_t __attribute__((optimize("O0"))) xmem::dummy_randomLoop_Word512(uintptr_t
 }
 #endif
 
-/* -------------------- CORE BENCHMARK ROUTINES -------------------------- 
+/* -------------------- CORE BENCHMARK ROUTINES --------------------------
  *
  * These routines access the memory in different ways for each benchmark type.
  * Optimization tricks include:
@@ -1954,9 +1954,9 @@ int32_t __attribute__((optimize("O0"))) xmem::dummy_randomLoop_Word512(uintptr_t
 /* ------------ SEQUENTIAL READ --------------*/
 
 int32_t xmem::forwSequentialRead_Word32(void* start_address, void* end_address) {
-    register Word32_t val; 
+    register Word32_t val;
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(start_address), *endptr = static_cast<Word32_t*>(end_address); wordptr < endptr;) {
-        UNROLL1024(val = *wordptr++;) 
+        UNROLL1024(val = *wordptr++;)
     }
     return 0;
 }
@@ -1972,7 +1972,7 @@ int32_t xmem::forwSequentialRead_Word64(void* start_address, void* end_address) 
 #endif
 
 #ifdef HAS_WORD_128
-int32_t xmem::forwSequentialRead_Word128(void* start_address, void* end_address) { 
+int32_t xmem::forwSequentialRead_Word128(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_forwSequentialRead_Word128(static_cast<Word128_t*>(start_address), static_cast<Word128_t*>(end_address));
 #else
@@ -1986,7 +1986,7 @@ int32_t xmem::forwSequentialRead_Word128(void* start_address, void* end_address)
 #endif
 
 #ifdef HAS_WORD_256
-int32_t xmem::forwSequentialRead_Word256(void* start_address, void* end_address) { 
+int32_t xmem::forwSequentialRead_Word256(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_forwSequentialRead_Word256(static_cast<Word256_t*>(start_address), static_cast<Word256_t*>(end_address));
 #else
@@ -2004,7 +2004,7 @@ int32_t xmem::forwSequentialRead_Word256(void* start_address, void* end_address)
 int32_t xmem::forwSequentialRead_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::forwSequentialRead_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::forwSequentialRead_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
 //    return win_x86_64_asm_forwSequentialRead_Word512(static_cast<Word512_t*>(start_address), static_cast<Word512_t*>(end_address));
@@ -2021,7 +2021,7 @@ int32_t __attribute__((optimize("O0"))) xmem::forwSequentialRead_Word512(void* s
 }
 #endif
 
-int32_t xmem::revSequentialRead_Word32(void* start_address, void* end_address) { 
+int32_t xmem::revSequentialRead_Word32(void* start_address, void* end_address) {
     register Word32_t val;
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(end_address), *begptr = static_cast<Word32_t*>(start_address); wordptr > begptr;) {
         UNROLL1024(val = *wordptr--;)
@@ -2040,7 +2040,7 @@ int32_t xmem::revSequentialRead_Word64(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_128
-int32_t xmem::revSequentialRead_Word128(void* start_address, void* end_address) { 
+int32_t xmem::revSequentialRead_Word128(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_revSequentialRead_Word128(static_cast<Word128_t*>(end_address), static_cast<Word128_t*>(start_address));
 #else
@@ -2072,7 +2072,7 @@ int32_t xmem::revSequentialRead_Word256(void* start_address, void* end_address) 
 int32_t xmem::revSequentialRead_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::revSequentialRead_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::revSequentialRead_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_revSequentialRead_Word512(static_cast<Word512_t*>(end_address), static_cast<Word512_t*>(start_address));
@@ -2092,32 +2092,32 @@ int32_t __attribute__((optimize("O0"))) xmem::revSequentialRead_Word512(void* st
 /* ------------ SEQUENTIAL WRITE --------------*/
 
 int32_t xmem::forwSequentialWrite_Word32(void* start_address, void* end_address) {
-    register Word32_t val = 0xFFFFFFFF; 
+    register Word32_t val = 0xFFFFFFFF;
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(start_address), *endptr = static_cast<Word32_t*>(end_address); wordptr < endptr;) {
-        UNROLL1024(*wordptr++ = val;) 
+        UNROLL1024(*wordptr++ = val;)
     }
     return 0;
 }
 
 #ifdef HAS_WORD_64
 int32_t xmem::forwSequentialWrite_Word64(void* start_address, void* end_address) {
-    register Word64_t val = 0xFFFFFFFFFFFFFFFF; 
+    register Word64_t val = 0xFFFFFFFFFFFFFFFF;
     for (volatile Word64_t* wordptr = static_cast<Word64_t*>(start_address), *endptr = static_cast<Word64_t*>(end_address); wordptr < endptr;) {
-        UNROLL512(*wordptr++ = val;) 
+        UNROLL512(*wordptr++ = val;)
     }
     return 0;
 }
 #endif
 
 #ifdef HAS_WORD_128
-int32_t xmem::forwSequentialWrite_Word128(void* start_address, void* end_address) { 
+int32_t xmem::forwSequentialWrite_Word128(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_forwSequentialWrite_Word128(static_cast<Word128_t*>(start_address), static_cast<Word128_t*>(end_address));
 #else
     register Word128_t val;
     val = my_64b_set_128b_word(0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF);
     for (volatile Word128_t* wordptr = static_cast<Word128_t*>(start_address), *endptr = static_cast<Word128_t*>(end_address); wordptr < endptr;) {
-        UNROLL256(*wordptr++ = val;) 
+        UNROLL256(*wordptr++ = val;)
     }
     return 0;
 #endif
@@ -2132,7 +2132,7 @@ int32_t xmem::forwSequentialWrite_Word256(void* start_address, void* end_address
     register Word256_t val;
     val = my_64b_set_256b_word(0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF);
     for (volatile Word256_t* wordptr = static_cast<Word256_t*>(start_address), *endptr = static_cast<Word256_t*>(end_address); wordptr < endptr;) {
-        UNROLL128(*wordptr++ = val;) 
+        UNROLL128(*wordptr++ = val;)
     }
     return 0;
 #endif
@@ -2144,7 +2144,7 @@ int32_t xmem::forwSequentialWrite_Word256(void* start_address, void* end_address
 int32_t xmem::forwSequentialWrite_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::forwSequentialWrite_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::forwSequentialWrite_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_forwSequentialWrite_Word512(static_cast<Word512_t*>(start_address), static_cast<Word512_t*>(end_address));
@@ -2154,7 +2154,7 @@ int32_t __attribute__((optimize("O0"))) xmem::forwSequentialWrite_Word512(void* 
     uint64_t scratchptr[8] __attribute__ ((aligned(512)));
     my_64b_set_512b_word(val, scratchptr, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF);
     for (Word512_t* wordptr = static_cast<Word512_t*>(start_address), *endptr = static_cast<Word512_t*>(end_address); wordptr < endptr;) {
-        UNROLL64(*wordptr++ = val;) 
+        UNROLL64(*wordptr++ = val;)
     }
     return 0;
 #endif
@@ -2180,7 +2180,7 @@ int32_t xmem::revSequentialWrite_Word64(void* start_address, void* end_address) 
 #endif
 
 #ifdef HAS_WORD_128
-int32_t xmem::revSequentialWrite_Word128(void* start_address, void* end_address) { 
+int32_t xmem::revSequentialWrite_Word128(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_revSequentialWrite_Word128(static_cast<Word128_t*>(end_address), static_cast<Word128_t*>(start_address));
 #else
@@ -2214,7 +2214,7 @@ int32_t xmem::revSequentialWrite_Word256(void* start_address, void* end_address)
 int32_t xmem::revSequentialWrite_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::revSequentialWrite_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::revSequentialWrite_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_revSequentialWrite_Word512(static_cast<Word512_t*>(end_address), static_cast<Word512_t*>(start_address));
@@ -2234,11 +2234,11 @@ int32_t __attribute__((optimize("O0"))) xmem::revSequentialWrite_Word512(void* s
 /* ------------ STRIDE 2 READ --------------*/
 
 int32_t xmem::forwStride2Read_Word32(void* start_address, void* end_address) {
-    register Word32_t val; 
+    register Word32_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word32_t);
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(start_address); i < len; i += 512) {
-        UNROLL512(val = *wordptr; wordptr += 2;) 
+        UNROLL512(val = *wordptr; wordptr += 2;)
         if (wordptr >= static_cast<Word32_t*>(end_address)) //end, modulo
             wordptr -= len;
     }
@@ -2246,12 +2246,12 @@ int32_t xmem::forwStride2Read_Word32(void* start_address, void* end_address) {
 }
 
 #ifdef HAS_WORD_64
-int32_t xmem::forwStride2Read_Word64(void* start_address, void* end_address) { 
-    register Word64_t val; 
+int32_t xmem::forwStride2Read_Word64(void* start_address, void* end_address) {
+    register Word64_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word64_t);
     for (volatile Word64_t* wordptr = static_cast<Word64_t*>(start_address); i < len; i += 256) {
-        UNROLL256(val = *wordptr; wordptr += 2;) 
+        UNROLL256(val = *wordptr; wordptr += 2;)
         if (wordptr >= static_cast<Word64_t*>(end_address)) //end, modulo
             wordptr -= len;
     }
@@ -2260,15 +2260,15 @@ int32_t xmem::forwStride2Read_Word64(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_128
-int32_t xmem::forwStride2Read_Word128(void* start_address, void* end_address) { 
+int32_t xmem::forwStride2Read_Word128(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_forwStride2Read_Word128(static_cast<Word128_t*>(start_address), static_cast<Word128_t*>(end_address));
 #else
-    register Word128_t val; 
+    register Word128_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word128_t);
     for (volatile Word128_t* wordptr = static_cast<Word128_t*>(start_address); i < len; i += 128) {
-        UNROLL128(val = *wordptr; wordptr += 2;) 
+        UNROLL128(val = *wordptr; wordptr += 2;)
         if (wordptr >= static_cast<Word128_t*>(end_address)) //end, modulo
             wordptr -= len;
     }
@@ -2278,15 +2278,15 @@ int32_t xmem::forwStride2Read_Word128(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_256
-int32_t xmem::forwStride2Read_Word256(void* start_address, void* end_address) { 
+int32_t xmem::forwStride2Read_Word256(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_forwStride2Read_Word256(static_cast<Word256_t*>(start_address), static_cast<Word256_t*>(end_address));
 #else
-    register Word256_t val; 
+    register Word256_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word256_t);
     for (volatile Word256_t* wordptr = static_cast<Word256_t*>(start_address); i < len; i += 64) {
-        UNROLL64(val = *wordptr; wordptr += 2;) 
+        UNROLL64(val = *wordptr; wordptr += 2;)
         if (wordptr >= static_cast<Word256_t*>(end_address)) //end, modulo
             wordptr -= len;
     }
@@ -2300,19 +2300,19 @@ int32_t xmem::forwStride2Read_Word256(void* start_address, void* end_address) {
 int32_t xmem::forwStride2Read_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::forwStride2Read_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::forwStride2Read_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_forwStride2Read_Word512(static_cast<Word256_t*>(start_address), static_cast<Word256_t*>(end_address));
     #error 512-bit words are not supported on Windows.
 #else
-    register Word512_t val; 
+    register Word512_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word512_t);
     //for (volatile Word512_t* wordptr = static_cast<Word512_t*>(start_address); i < len; i += 32) {
     for (Word512_t* wordptr = static_cast<Word512_t*>(start_address); i < len; i += 32) {
-        //UNROLL32(val = *wordptr; wordptr += 2;) 
-        UNROLL32(val = my_512b_load(wordptr); wordptr += 2;) 
+        //UNROLL32(val = *wordptr; wordptr += 2;)
+        UNROLL32(val = my_512b_load(wordptr); wordptr += 2;)
         if (wordptr >= static_cast<Word512_t*>(end_address)) //end, modulo
             wordptr -= len;
     }
@@ -2322,11 +2322,11 @@ int32_t __attribute__((optimize("O0"))) xmem::forwStride2Read_Word512(void* star
 #endif
 
 int32_t xmem::revStride2Read_Word32(void* start_address, void* end_address) {
-    register Word32_t val; 
+    register Word32_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word32_t);
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(end_address); i < len; i += 512) {
-        UNROLL512(val = *wordptr; wordptr -= 2;) 
+        UNROLL512(val = *wordptr; wordptr -= 2;)
         if (wordptr <= static_cast<Word32_t*>(start_address)) //end, modulo
             wordptr += len;
     }
@@ -2334,8 +2334,8 @@ int32_t xmem::revStride2Read_Word32(void* start_address, void* end_address) {
 }
 
 #ifdef HAS_WORD_64
-int32_t xmem::revStride2Read_Word64(void* start_address, void* end_address) { 
-    register Word64_t val; 
+int32_t xmem::revStride2Read_Word64(void* start_address, void* end_address) {
+    register Word64_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word64_t);
     for (volatile Word64_t* wordptr = static_cast<Word64_t*>(end_address); i < len; i += 256) {
@@ -2348,11 +2348,11 @@ int32_t xmem::revStride2Read_Word64(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_128
-int32_t xmem::revStride2Read_Word128(void* start_address, void* end_address) { 
+int32_t xmem::revStride2Read_Word128(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_revStride2Read_Word128(static_cast<Word128_t*>(end_address), static_cast<Word128_t*>(start_address));
 #else
-    register Word128_t val; 
+    register Word128_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word128_t);
     for (volatile Word128_t* wordptr = static_cast<Word128_t*>(end_address); i < len; i += 128) {
@@ -2366,11 +2366,11 @@ int32_t xmem::revStride2Read_Word128(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_256
-int32_t xmem::revStride2Read_Word256(void* start_address, void* end_address) { 
+int32_t xmem::revStride2Read_Word256(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_revStride2Read_Word256(static_cast<Word256_t*>(end_address), static_cast<Word256_t*>(start_address));
 #else
-    register Word256_t val; 
+    register Word256_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word256_t);
     for (volatile Word256_t* wordptr = static_cast<Word256_t*>(end_address); i < len; i += 64) {
@@ -2388,13 +2388,13 @@ int32_t xmem::revStride2Read_Word256(void* start_address, void* end_address) {
 int32_t xmem::revStride2Read_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::revStride2Read_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::revStride2Read_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_revStride2Read_Word512(static_cast<Word512_t*>(end_address), static_cast<Word512_t*>(start_address));
     #error 512-bit words are not supported on Windows.
 #else
-    register Word512_t val; 
+    register Word512_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word512_t);
     //for (volatile Word512_t* wordptr = static_cast<Word512_t*>(end_address); i < len; i += 32) {
@@ -2412,7 +2412,7 @@ int32_t __attribute__((optimize("O0"))) xmem::revStride2Read_Word512(void* start
 /* ------------ STRIDE 2 WRITE --------------*/
 
 int32_t xmem::forwStride2Write_Word32(void* start_address, void* end_address) {
-    register Word32_t val = 0xFFFFFFFF; 
+    register Word32_t val = 0xFFFFFFFF;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word32_t);
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(start_address); i < len; i += 512) {
@@ -2425,7 +2425,7 @@ int32_t xmem::forwStride2Write_Word32(void* start_address, void* end_address) {
 
 #ifdef HAS_WORD_64
 int32_t xmem::forwStride2Write_Word64(void* start_address, void* end_address) {
-    register Word64_t val = 0xFFFFFFFFFFFFFFFF; 
+    register Word64_t val = 0xFFFFFFFFFFFFFFFF;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word64_t);
     for (volatile Word64_t* wordptr = static_cast<Word64_t*>(start_address); i < len; i += 256) {
@@ -2438,7 +2438,7 @@ int32_t xmem::forwStride2Write_Word64(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_128
-int32_t xmem::forwStride2Write_Word128(void* start_address, void* end_address) { 
+int32_t xmem::forwStride2Write_Word128(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_forwStride2Write_Word128(static_cast<Word128_t*>(start_address), static_cast<Word128_t*>(end_address));
 #else
@@ -2457,7 +2457,7 @@ int32_t xmem::forwStride2Write_Word128(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_256
-int32_t xmem::forwStride2Write_Word256(void* start_address, void* end_address) { 
+int32_t xmem::forwStride2Write_Word256(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_forwStride2Write_Word256(static_cast<Word256_t*>(start_address), static_cast<Word256_t*>(end_address));
 #else
@@ -2480,7 +2480,7 @@ int32_t xmem::forwStride2Write_Word256(void* start_address, void* end_address) {
 int32_t xmem::forwStride2Write_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::forwStride2Write_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::forwStride2Write_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_forwStride2Write_Word512(static_cast<Word512_t*>(start_address), static_cast<Word512_t*>(end_address));
@@ -2501,8 +2501,8 @@ int32_t __attribute__((optimize("O0"))) xmem::forwStride2Write_Word512(void* sta
 }
 #endif
 
-int32_t xmem::revStride2Write_Word32(void* start_address, void* end_address) { 
-    register Word32_t val = 0xFFFFFFFF; 
+int32_t xmem::revStride2Write_Word32(void* start_address, void* end_address) {
+    register Word32_t val = 0xFFFFFFFF;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word32_t);
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(end_address); i < len; i += 512) {
@@ -2514,8 +2514,8 @@ int32_t xmem::revStride2Write_Word32(void* start_address, void* end_address) {
 }
 
 #ifdef HAS_WORD_64
-int32_t xmem::revStride2Write_Word64(void* start_address, void* end_address) { 
-    register Word64_t val = 0xFFFFFFFFFFFFFFFF; 
+int32_t xmem::revStride2Write_Word64(void* start_address, void* end_address) {
+    register Word64_t val = 0xFFFFFFFFFFFFFFFF;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word64_t);
     for (volatile Word64_t* wordptr = static_cast<Word64_t*>(end_address); i < len; i += 256) {
@@ -2528,12 +2528,12 @@ int32_t xmem::revStride2Write_Word64(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_128
-int32_t xmem::revStride2Write_Word128(void* start_address, void* end_address) { 
+int32_t xmem::revStride2Write_Word128(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_revStride2Write_Word128(static_cast<Word128_t*>(end_address), static_cast<Word128_t*>(start_address));
 #else
     register Word128_t val;
-    val = my_64b_set_128b_word(0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF); 
+    val = my_64b_set_128b_word(0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF);
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word128_t);
     for (volatile Word128_t* wordptr = static_cast<Word128_t*>(end_address); i < len; i += 128) {
@@ -2547,12 +2547,12 @@ int32_t xmem::revStride2Write_Word128(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_256
-int32_t xmem::revStride2Write_Word256(void* start_address, void* end_address) { 
+int32_t xmem::revStride2Write_Word256(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_revStride2Write_Word256(static_cast<Word256_t*>(end_address), static_cast<Word256_t*>(start_address));
 #else
     register Word256_t val;
-    val = my_64b_set_256b_word(0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF); 
+    val = my_64b_set_256b_word(0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF);
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word256_t);
     for (volatile Word256_t* wordptr = static_cast<Word256_t*>(end_address); i < len; i += 64) {
@@ -2570,7 +2570,7 @@ int32_t xmem::revStride2Write_Word256(void* start_address, void* end_address) {
 int32_t xmem::revStride2Write_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::revStride2Write_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::revStride2Write_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_forwStride2Write_Word512(static_cast<Word512_t*>(start_address), static_cast<Word512_t*>(end_address));
@@ -2594,11 +2594,11 @@ int32_t __attribute__((optimize("O0"))) xmem::revStride2Write_Word512(void* star
 /* ------------ STRIDE 4 READ --------------*/
 
 int32_t xmem::forwStride4Read_Word32(void* start_address, void* end_address) {
-    register Word32_t val; 
+    register Word32_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word32_t);
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(start_address); i < len; i += 256) {
-        UNROLL256(val = *wordptr; wordptr += 4;) 
+        UNROLL256(val = *wordptr; wordptr += 4;)
         if (wordptr >= static_cast<Word32_t*>(end_address)) //end, modulo
             wordptr -= len;
     }
@@ -2606,12 +2606,12 @@ int32_t xmem::forwStride4Read_Word32(void* start_address, void* end_address) {
 }
 
 #ifdef HAS_WORD_64
-int32_t xmem::forwStride4Read_Word64(void* start_address, void* end_address) { 
-    register Word64_t val; 
+int32_t xmem::forwStride4Read_Word64(void* start_address, void* end_address) {
+    register Word64_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word64_t);
     for (volatile Word64_t* wordptr = static_cast<Word64_t*>(start_address); i < len; i += 128) {
-        UNROLL128(val = *wordptr; wordptr += 4;) 
+        UNROLL128(val = *wordptr; wordptr += 4;)
         if (wordptr >= static_cast<Word64_t*>(end_address)) //end, modulo
             wordptr -= len;
     }
@@ -2620,15 +2620,15 @@ int32_t xmem::forwStride4Read_Word64(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_128
-int32_t xmem::forwStride4Read_Word128(void* start_address, void* end_address) { 
+int32_t xmem::forwStride4Read_Word128(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_forwStride4Read_Word128(static_cast<Word128_t*>(start_address), static_cast<Word128_t*>(end_address));
 #else
-    register Word128_t val; 
+    register Word128_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word128_t);
     for (volatile Word128_t* wordptr = static_cast<Word128_t*>(start_address); i < len; i += 64) {
-        UNROLL64(val = *wordptr; wordptr += 4;) 
+        UNROLL64(val = *wordptr; wordptr += 4;)
         if (wordptr >= static_cast<Word128_t*>(end_address)) //end, modulo
             wordptr -= len;
     }
@@ -2638,15 +2638,15 @@ int32_t xmem::forwStride4Read_Word128(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_256
-int32_t xmem::forwStride4Read_Word256(void* start_address, void* end_address) { 
+int32_t xmem::forwStride4Read_Word256(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_forwStride4Read_Word256(static_cast<Word256_t*>(start_address), static_cast<Word256_t*>(end_address));
 #else
-    register Word256_t val; 
+    register Word256_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word256_t);
     for (volatile Word256_t* wordptr = static_cast<Word256_t*>(start_address); i < len; i += 32) {
-        UNROLL32(val = *wordptr; wordptr += 4;) 
+        UNROLL32(val = *wordptr; wordptr += 4;)
         if (wordptr >= static_cast<Word256_t*>(end_address)) //end, modulo
             wordptr -= len;
     }
@@ -2660,19 +2660,19 @@ int32_t xmem::forwStride4Read_Word256(void* start_address, void* end_address) {
 int32_t xmem::forwStride4Read_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::forwStride4Read_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::forwStride4Read_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_forwStride4Read_Word512(static_cast<Word512_t*>(start_address), static_cast<Word512_t*>(end_address));
     #error 512-bit words are not supported on Windows.
 #else
-    register Word512_t val; 
+    register Word512_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word512_t);
     //for (volatile Word512_t* wordptr = static_cast<Word512_t*>(start_address); i < len; i += 16) {
     for (Word512_t* wordptr = static_cast<Word512_t*>(start_address); i < len; i += 16) {
-        //UNROLL16(val = *wordptr; wordptr += 4;) 
-        UNROLL16(val = my_512b_load(wordptr); wordptr += 4;) 
+        //UNROLL16(val = *wordptr; wordptr += 4;)
+        UNROLL16(val = my_512b_load(wordptr); wordptr += 4;)
         if (wordptr >= static_cast<Word512_t*>(end_address)) //end, modulo
             wordptr -= len;
     }
@@ -2682,11 +2682,11 @@ int32_t __attribute__((optimize("O0"))) xmem::forwStride4Read_Word512(void* star
 #endif
 
 int32_t xmem::revStride4Read_Word32(void* start_address, void* end_address) {
-    register Word32_t val; 
+    register Word32_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word32_t);
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(end_address); i < len; i += 256) {
-        UNROLL256(val = *wordptr; wordptr -= 4;) 
+        UNROLL256(val = *wordptr; wordptr -= 4;)
         if (wordptr <= static_cast<Word32_t*>(start_address)) //end, modulo
             wordptr += len;
     }
@@ -2694,8 +2694,8 @@ int32_t xmem::revStride4Read_Word32(void* start_address, void* end_address) {
 }
 
 #ifdef HAS_WORD_64
-int32_t xmem::revStride4Read_Word64(void* start_address, void* end_address) { 
-    register Word64_t val; 
+int32_t xmem::revStride4Read_Word64(void* start_address, void* end_address) {
+    register Word64_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word64_t);
     for (volatile Word64_t* wordptr = static_cast<Word64_t*>(end_address); i < len; i += 128) {
@@ -2708,11 +2708,11 @@ int32_t xmem::revStride4Read_Word64(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_128
-int32_t xmem::revStride4Read_Word128(void* start_address, void* end_address) { 
+int32_t xmem::revStride4Read_Word128(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_revStride4Read_Word128(static_cast<Word128_t*>(end_address), static_cast<Word128_t*>(start_address));
 #else
-    register Word128_t val; 
+    register Word128_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word128_t);
     for (volatile Word128_t* wordptr = static_cast<Word128_t*>(end_address); i < len; i += 64) {
@@ -2726,11 +2726,11 @@ int32_t xmem::revStride4Read_Word128(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_256
-int32_t xmem::revStride4Read_Word256(void* start_address, void* end_address) { 
+int32_t xmem::revStride4Read_Word256(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_revStride4Read_Word256(static_cast<Word256_t*>(end_address), static_cast<Word256_t*>(start_address));
 #else
-    register Word256_t val; 
+    register Word256_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word256_t);
     for (volatile Word256_t* wordptr = static_cast<Word256_t*>(end_address); i < len; i += 32) {
@@ -2748,13 +2748,13 @@ int32_t xmem::revStride4Read_Word256(void* start_address, void* end_address) {
 int32_t xmem::revStride4Read_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::revStride4Read_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::revStride4Read_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_revStride4Read_Word512(static_cast<Word512_t*>(end_address), static_cast<Word512_t*>(start_address));
     #error 512-bit words are not supported on Windows.
 #else
-    register Word512_t val; 
+    register Word512_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word512_t);
     //for (volatile Word512_t* wordptr = static_cast<Word512_t*>(end_address); i < len; i += 16) {
@@ -2772,7 +2772,7 @@ int32_t __attribute__((optimize("O0"))) xmem::revStride4Read_Word512(void* start
 /* ------------ STRIDE 4 WRITE --------------*/
 
 int32_t xmem::forwStride4Write_Word32(void* start_address, void* end_address) {
-    register Word32_t val = 0xFFFFFFFF; 
+    register Word32_t val = 0xFFFFFFFF;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word32_t);
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(start_address); i < len; i += 256) {
@@ -2785,7 +2785,7 @@ int32_t xmem::forwStride4Write_Word32(void* start_address, void* end_address) {
 
 #ifdef HAS_WORD_64
 int32_t xmem::forwStride4Write_Word64(void* start_address, void* end_address) {
-    register Word64_t val = 0xFFFFFFFFFFFFFFFF; 
+    register Word64_t val = 0xFFFFFFFFFFFFFFFF;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word64_t);
     for (volatile Word64_t* wordptr = static_cast<Word64_t*>(start_address); i < len; i += 128) {
@@ -2798,7 +2798,7 @@ int32_t xmem::forwStride4Write_Word64(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_128
-int32_t xmem::forwStride4Write_Word128(void* start_address, void* end_address) { 
+int32_t xmem::forwStride4Write_Word128(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_forwStride4Write_Word128(static_cast<Word128_t*>(start_address), static_cast<Word128_t*>(end_address));
 #else
@@ -2817,7 +2817,7 @@ int32_t xmem::forwStride4Write_Word128(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_256
-int32_t xmem::forwStride4Write_Word256(void* start_address, void* end_address) { 
+int32_t xmem::forwStride4Write_Word256(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_forwStride4Write_Word256(static_cast<Word256_t*>(start_address), static_cast<Word256_t*>(end_address));
 #else
@@ -2840,7 +2840,7 @@ int32_t xmem::forwStride4Write_Word256(void* start_address, void* end_address) {
 int32_t xmem::forwStride4Write_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::forwStride4Write_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::forwStride4Write_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_forwStride4Write_Word512(static_cast<Word512_t*>(start_address), static_cast<Word512_t*>(end_address));
@@ -2861,8 +2861,8 @@ int32_t __attribute__((optimize("O0"))) xmem::forwStride4Write_Word512(void* sta
 }
 #endif
 
-int32_t xmem::revStride4Write_Word32(void* start_address, void* end_address) { 
-    register Word32_t val = 0xFFFFFFFF; 
+int32_t xmem::revStride4Write_Word32(void* start_address, void* end_address) {
+    register Word32_t val = 0xFFFFFFFF;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word32_t);
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(end_address); i < len; i += 256) {
@@ -2874,8 +2874,8 @@ int32_t xmem::revStride4Write_Word32(void* start_address, void* end_address) {
 }
 
 #ifdef HAS_WORD_64
-int32_t xmem::revStride4Write_Word64(void* start_address, void* end_address) { 
-    register Word64_t val = 0xFFFFFFFFFFFFFFFF; 
+int32_t xmem::revStride4Write_Word64(void* start_address, void* end_address) {
+    register Word64_t val = 0xFFFFFFFFFFFFFFFF;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word64_t);
     for (volatile Word64_t* wordptr = static_cast<Word64_t*>(end_address); i < len; i += 128) {
@@ -2888,7 +2888,7 @@ int32_t xmem::revStride4Write_Word64(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_128
-int32_t xmem::revStride4Write_Word128(void* start_address, void* end_address) { 
+int32_t xmem::revStride4Write_Word128(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_revStride4Write_Word128(static_cast<Word128_t*>(end_address), static_cast<Word128_t*>(start_address));
 #else
@@ -2907,7 +2907,7 @@ int32_t xmem::revStride4Write_Word128(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_256
-int32_t xmem::revStride4Write_Word256(void* start_address, void* end_address) { 
+int32_t xmem::revStride4Write_Word256(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_revStride4Write_Word256(static_cast<Word256_t*>(end_address), static_cast<Word256_t*>(start_address));
 #else
@@ -2930,7 +2930,7 @@ int32_t xmem::revStride4Write_Word256(void* start_address, void* end_address) {
 int32_t xmem::revStride4Write_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::revStride4Write_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::revStride4Write_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_revStride4Write_Word512(static_cast<Word512_t*>(end_address), static_cast<Word512_t*>(start_address));
@@ -2954,11 +2954,11 @@ int32_t __attribute__((optimize("O0"))) xmem::revStride4Write_Word512(void* star
 /* ------------ STRIDE 8 READ --------------*/
 
 int32_t xmem::forwStride8Read_Word32(void* start_address, void* end_address) {
-    register Word32_t val; 
+    register Word32_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word32_t);
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(start_address); i < len; i += 128) {
-        UNROLL128(val = *wordptr; wordptr += 8;) 
+        UNROLL128(val = *wordptr; wordptr += 8;)
         if (wordptr >= static_cast<Word32_t*>(end_address)) //end, modulo
             wordptr -= len;
     }
@@ -2966,12 +2966,12 @@ int32_t xmem::forwStride8Read_Word32(void* start_address, void* end_address) {
 }
 
 #ifdef HAS_WORD_64
-int32_t xmem::forwStride8Read_Word64(void* start_address, void* end_address) { 
-    register Word64_t val; 
+int32_t xmem::forwStride8Read_Word64(void* start_address, void* end_address) {
+    register Word64_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word64_t);
     for (volatile Word64_t* wordptr = static_cast<Word64_t*>(start_address); i < len; i += 64) {
-        UNROLL64(val = *wordptr; wordptr += 8;) 
+        UNROLL64(val = *wordptr; wordptr += 8;)
         if (wordptr >= static_cast<Word64_t*>(end_address)) //end, modulo
             wordptr -= len;
     }
@@ -2980,15 +2980,15 @@ int32_t xmem::forwStride8Read_Word64(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_128
-int32_t xmem::forwStride8Read_Word128(void* start_address, void* end_address) { 
+int32_t xmem::forwStride8Read_Word128(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_forwStride8Read_Word128(static_cast<Word128_t*>(start_address), static_cast<Word128_t*>(end_address));
 #else
-    register Word128_t val; 
+    register Word128_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word128_t);
     for (volatile Word128_t* wordptr = static_cast<Word128_t*>(start_address); i < len; i += 32) {
-        UNROLL32(val = *wordptr; wordptr += 8;) 
+        UNROLL32(val = *wordptr; wordptr += 8;)
         if (wordptr >= static_cast<Word128_t*>(end_address)) //end, modulo
             wordptr -= len;
     }
@@ -2998,15 +2998,15 @@ int32_t xmem::forwStride8Read_Word128(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_256
-int32_t xmem::forwStride8Read_Word256(void* start_address, void* end_address) { 
+int32_t xmem::forwStride8Read_Word256(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_forwStride8Read_Word256(static_cast<Word256_t*>(start_address), static_cast<Word256_t*>(end_address));
 #else
-    register Word256_t val; 
+    register Word256_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word256_t);
     for (volatile Word256_t* wordptr = static_cast<Word256_t*>(start_address); i < len; i += 16) {
-        UNROLL16(val = *wordptr; wordptr += 8;) 
+        UNROLL16(val = *wordptr; wordptr += 8;)
         if (wordptr >= static_cast<Word256_t*>(end_address)) //end, modulo
             wordptr -= len;
     }
@@ -3020,19 +3020,19 @@ int32_t xmem::forwStride8Read_Word256(void* start_address, void* end_address) {
 int32_t xmem::forwStride8Read_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::forwStride8Read_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::forwStride8Read_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_forwStride8Read_Word512(static_cast<Word512_t*>(start_address), static_cast<Word512_t*>(end_address));
     #error 512-bit words are not supported on Windows.
 #else
-    register Word512_t val; 
+    register Word512_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word512_t);
     //for (volatile Word512_t* wordptr = static_cast<Word512_t*>(start_address); i < len; i += 8) {
     for (Word512_t* wordptr = static_cast<Word512_t*>(start_address); i < len; i += 8) {
-        //UNROLL8(val = *wordptr; wordptr += 8;) 
-        UNROLL8(val = my_512b_load(wordptr); wordptr += 8;) 
+        //UNROLL8(val = *wordptr; wordptr += 8;)
+        UNROLL8(val = my_512b_load(wordptr); wordptr += 8;)
         if (wordptr >= static_cast<Word512_t*>(end_address)) //end, modulo
             wordptr -= len;
     }
@@ -3042,11 +3042,11 @@ int32_t __attribute__((optimize("O0"))) xmem::forwStride8Read_Word512(void* star
 #endif
 
 int32_t xmem::revStride8Read_Word32(void* start_address, void* end_address) {
-    register Word32_t val; 
+    register Word32_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word32_t);
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(end_address); i < len; i += 128) {
-        UNROLL128(val = *wordptr; wordptr -= 8;) 
+        UNROLL128(val = *wordptr; wordptr -= 8;)
         if (wordptr <= static_cast<Word32_t*>(start_address)) //end, modulo
             wordptr += len;
     }
@@ -3054,8 +3054,8 @@ int32_t xmem::revStride8Read_Word32(void* start_address, void* end_address) {
 }
 
 #ifdef HAS_WORD_64
-int32_t xmem::revStride8Read_Word64(void* start_address, void* end_address) { 
-    register Word64_t val; 
+int32_t xmem::revStride8Read_Word64(void* start_address, void* end_address) {
+    register Word64_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word64_t);
     for (volatile Word64_t* wordptr = static_cast<Word64_t*>(end_address); i < len; i += 64) {
@@ -3068,11 +3068,11 @@ int32_t xmem::revStride8Read_Word64(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_128
-int32_t xmem::revStride8Read_Word128(void* start_address, void* end_address) { 
+int32_t xmem::revStride8Read_Word128(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_revStride8Read_Word128(static_cast<Word128_t*>(end_address), static_cast<Word128_t*>(start_address));
 #else
-    register Word128_t val; 
+    register Word128_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word128_t);
     for (volatile Word128_t* wordptr = static_cast<Word128_t*>(end_address); i < len; i += 32) {
@@ -3086,11 +3086,11 @@ int32_t xmem::revStride8Read_Word128(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_256
-int32_t xmem::revStride8Read_Word256(void* start_address, void* end_address) { 
+int32_t xmem::revStride8Read_Word256(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_revStride8Read_Word256(static_cast<Word256_t*>(end_address), static_cast<Word256_t*>(start_address));
 #else
-    register Word256_t val; 
+    register Word256_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word256_t);
     for (volatile Word256_t* wordptr = static_cast<Word256_t*>(end_address); i < len; i += 16) {
@@ -3108,13 +3108,13 @@ int32_t xmem::revStride8Read_Word256(void* start_address, void* end_address) {
 int32_t xmem::revStride8Read_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::revStride8Read_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::revStride8Read_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_revStride8Read_Word512(static_cast<Word512_t*>(end_address), static_cast<Word512_t*>(start_address));
     #error 512-bit words are not supported on Windows.
 #else
-    register Word512_t val; 
+    register Word512_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word512_t);
     //for (volatile Word512_t* wordptr = static_cast<Word512_t*>(end_address); i < len; i += 8) {
@@ -3132,7 +3132,7 @@ int32_t __attribute__((optimize("O0"))) xmem::revStride8Read_Word512(void* start
 /* ------------ STRIDE 8 WRITE --------------*/
 
 int32_t xmem::forwStride8Write_Word32(void* start_address, void* end_address) {
-    register Word32_t val = 0xFFFFFFFF; 
+    register Word32_t val = 0xFFFFFFFF;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word32_t);
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(start_address); i < len; i += 128) {
@@ -3145,7 +3145,7 @@ int32_t xmem::forwStride8Write_Word32(void* start_address, void* end_address) {
 
 #ifdef HAS_WORD_64
 int32_t xmem::forwStride8Write_Word64(void* start_address, void* end_address) {
-    register Word64_t val = 0xFFFFFFFFFFFFFFFF; 
+    register Word64_t val = 0xFFFFFFFFFFFFFFFF;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word64_t);
     for (volatile Word64_t* wordptr = static_cast<Word64_t*>(start_address); i < len; i += 64) {
@@ -3158,7 +3158,7 @@ int32_t xmem::forwStride8Write_Word64(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_128
-int32_t xmem::forwStride8Write_Word128(void* start_address, void* end_address) { 
+int32_t xmem::forwStride8Write_Word128(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_forwStride8Write_Word128(static_cast<Word128_t*>(start_address), static_cast<Word128_t*>(end_address));
 #else
@@ -3177,12 +3177,12 @@ int32_t xmem::forwStride8Write_Word128(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_256
-int32_t xmem::forwStride8Write_Word256(void* start_address, void* end_address) { 
+int32_t xmem::forwStride8Write_Word256(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_forwStride8Write_Word256(static_cast<Word256_t*>(start_address), static_cast<Word256_t*>(end_address));
 #else
     register Word256_t val;
-    val = my_64b_set_256b_word(0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF); 
+    val = my_64b_set_256b_word(0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF);
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word256_t);
     for (volatile Word256_t* wordptr = static_cast<Word256_t*>(start_address); i < len; i += 16) {
@@ -3200,7 +3200,7 @@ int32_t xmem::forwStride8Write_Word256(void* start_address, void* end_address) {
 int32_t xmem::forwStride8Write_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::forwStride8Write_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::forwStride8Write_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_forwStride8Write_Word512(static_cast<Word512_t*>(start_address), static_cast<Word512_t*>(end_address));
@@ -3208,7 +3208,7 @@ int32_t __attribute__((optimize("O0"))) xmem::forwStride8Write_Word512(void* sta
 #else
     register Word512_t val;
     uint64_t scratchptr[8] __attribute__ ((aligned(512)));
-    my_64b_set_512b_word(val, scratchptr, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF); 
+    my_64b_set_512b_word(val, scratchptr, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF);
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word512_t);
     for (Word512_t* wordptr = static_cast<Word512_t*>(start_address); i < len; i += 8) {
@@ -3221,8 +3221,8 @@ int32_t __attribute__((optimize("O0"))) xmem::forwStride8Write_Word512(void* sta
 }
 #endif
 
-int32_t xmem::revStride8Write_Word32(void* start_address, void* end_address) { 
-    register Word32_t val = 0xFFFFFFFF; 
+int32_t xmem::revStride8Write_Word32(void* start_address, void* end_address) {
+    register Word32_t val = 0xFFFFFFFF;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word32_t);
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(end_address); i < len; i += 128) {
@@ -3234,8 +3234,8 @@ int32_t xmem::revStride8Write_Word32(void* start_address, void* end_address) {
 }
 
 #ifdef HAS_WORD_64
-int32_t xmem::revStride8Write_Word64(void* start_address, void* end_address) { 
-    register Word64_t val = 0xFFFFFFFFFFFFFFFF; 
+int32_t xmem::revStride8Write_Word64(void* start_address, void* end_address) {
+    register Word64_t val = 0xFFFFFFFFFFFFFFFF;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word64_t);
     for (volatile Word64_t* wordptr = static_cast<Word64_t*>(end_address); i < len; i += 64) {
@@ -3248,12 +3248,12 @@ int32_t xmem::revStride8Write_Word64(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_128
-int32_t xmem::revStride8Write_Word128(void* start_address, void* end_address) { 
+int32_t xmem::revStride8Write_Word128(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_revStride8Write_Word128(static_cast<Word128_t*>(end_address), static_cast<Word128_t*>(start_address));
 #else
     register Word128_t val;
-    val = my_64b_set_128b_word(0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF); 
+    val = my_64b_set_128b_word(0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF);
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word128_t);
     for (volatile Word128_t* wordptr = static_cast<Word128_t*>(end_address); i < len; i += 32) {
@@ -3267,12 +3267,12 @@ int32_t xmem::revStride8Write_Word128(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_256
-int32_t xmem::revStride8Write_Word256(void* start_address, void* end_address) { 
+int32_t xmem::revStride8Write_Word256(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_revStride8Write_Word256(static_cast<Word256_t*>(end_address), static_cast<Word256_t*>(start_address));
 #else
     register Word256_t val;
-    val = my_64b_set_256b_word(0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF); 
+    val = my_64b_set_256b_word(0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF);
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word256_t);
     for (volatile Word256_t* wordptr = static_cast<Word256_t*>(end_address); i < len; i += 16) {
@@ -3290,7 +3290,7 @@ int32_t xmem::revStride8Write_Word256(void* start_address, void* end_address) {
 int32_t xmem::revStride8Write_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::revStride8Write_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::revStride8Write_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_revStride8Write_Word512(static_cast<Word512_t*>(end_address), static_cast<Word512_t*>(start_address));
@@ -3298,7 +3298,7 @@ int32_t __attribute__((optimize("O0"))) xmem::revStride8Write_Word512(void* star
 #else
     register Word512_t val;
     uint64_t scratchptr[8] __attribute__ ((aligned(512)));
-    my_64b_set_512b_word(val, scratchptr, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF); 
+    my_64b_set_512b_word(val, scratchptr, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF);
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word512_t);
     for (Word512_t* wordptr = static_cast<Word512_t*>(end_address); i < len; i += 8) {
@@ -3314,11 +3314,11 @@ int32_t __attribute__((optimize("O0"))) xmem::revStride8Write_Word512(void* star
 /* ------------ STRIDE 16 READ --------------*/
 
 int32_t xmem::forwStride16Read_Word32(void* start_address, void* end_address) {
-    register Word32_t val; 
+    register Word32_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word32_t);
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(start_address); i < len; i += 64) {
-        UNROLL64(val = *wordptr; wordptr += 16;) 
+        UNROLL64(val = *wordptr; wordptr += 16;)
         if (wordptr >= static_cast<Word32_t*>(end_address)) //end, modulo
             wordptr -= len;
     }
@@ -3326,12 +3326,12 @@ int32_t xmem::forwStride16Read_Word32(void* start_address, void* end_address) {
 }
 
 #ifdef HAS_WORD_64
-int32_t xmem::forwStride16Read_Word64(void* start_address, void* end_address) { 
-    register Word64_t val; 
+int32_t xmem::forwStride16Read_Word64(void* start_address, void* end_address) {
+    register Word64_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word64_t);
     for (volatile Word64_t* wordptr = static_cast<Word64_t*>(start_address); i < len; i += 32) {
-        UNROLL32(val = *wordptr; wordptr += 16;) 
+        UNROLL32(val = *wordptr; wordptr += 16;)
         if (wordptr >= static_cast<Word64_t*>(end_address)) //end, modulo
             wordptr -= len;
     }
@@ -3340,15 +3340,15 @@ int32_t xmem::forwStride16Read_Word64(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_128
-int32_t xmem::forwStride16Read_Word128(void* start_address, void* end_address) { 
+int32_t xmem::forwStride16Read_Word128(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_forwStride16Read_Word128(static_cast<Word128_t*>(start_address), static_cast<Word128_t*>(end_address));
 #else
-    register Word128_t val; 
+    register Word128_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word128_t);
     for (volatile Word128_t* wordptr = static_cast<Word128_t*>(start_address); i < len; i += 16) {
-        UNROLL16(val = *wordptr; wordptr += 16;) 
+        UNROLL16(val = *wordptr; wordptr += 16;)
         if (wordptr >= static_cast<Word128_t*>(end_address)) //end, modulo
             wordptr -= len;
     }
@@ -3358,15 +3358,15 @@ int32_t xmem::forwStride16Read_Word128(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_256
-int32_t xmem::forwStride16Read_Word256(void* start_address, void* end_address) { 
+int32_t xmem::forwStride16Read_Word256(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_forwStride16Read_Word256(static_cast<Word256_t*>(start_address), static_cast<Word256_t*>(end_address));
 #else
-    register Word256_t val; 
+    register Word256_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word256_t);
     for (volatile Word256_t* wordptr = static_cast<Word256_t*>(start_address); i < len; i += 8) {
-        UNROLL8(val = *wordptr; wordptr += 16;) 
+        UNROLL8(val = *wordptr; wordptr += 16;)
         if (wordptr >= static_cast<Word256_t*>(end_address)) //end, modulo
             wordptr -= len;
     }
@@ -3380,19 +3380,19 @@ int32_t xmem::forwStride16Read_Word256(void* start_address, void* end_address) {
 int32_t xmem::forwStride16Read_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::forwStride16Read_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::forwStride16Read_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_forwStride16Read_Word512(static_cast<Word512_t*>(start_address), static_cast<Word512_t*>(end_address));
     #error 512-bit words are not supported on Windows.
 #else
-    register Word512_t val; 
+    register Word512_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word512_t);
     //for (volatile Word512_t* wordptr = static_cast<Word512_t*>(start_address); i < len; i += 4) {
     for (Word512_t* wordptr = static_cast<Word512_t*>(start_address); i < len; i += 4) {
-        //UNROLL4(val = *wordptr; wordptr += 16;) 
-        UNROLL4(val = my_512b_load(wordptr); wordptr += 16;) 
+        //UNROLL4(val = *wordptr; wordptr += 16;)
+        UNROLL4(val = my_512b_load(wordptr); wordptr += 16;)
         if (wordptr >= static_cast<Word512_t*>(end_address)) //end, modulo
             wordptr -= len;
     }
@@ -3402,11 +3402,11 @@ int32_t __attribute__((optimize("O0"))) xmem::forwStride16Read_Word512(void* sta
 #endif
 
 int32_t xmem::revStride16Read_Word32(void* start_address, void* end_address) {
-    register Word32_t val; 
+    register Word32_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word32_t);
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(end_address); i < len; i += 64) {
-        UNROLL64(val = *wordptr; wordptr -= 16;) 
+        UNROLL64(val = *wordptr; wordptr -= 16;)
         if (wordptr <= static_cast<Word32_t*>(start_address)) //end, modulo
             wordptr += len;
     }
@@ -3414,8 +3414,8 @@ int32_t xmem::revStride16Read_Word32(void* start_address, void* end_address) {
 }
 
 #ifdef HAS_WORD_64
-int32_t xmem::revStride16Read_Word64(void* start_address, void* end_address) { 
-    register Word64_t val; 
+int32_t xmem::revStride16Read_Word64(void* start_address, void* end_address) {
+    register Word64_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word64_t);
     for (volatile Word64_t* wordptr = static_cast<Word64_t*>(end_address); i < len; i += 32) {
@@ -3428,11 +3428,11 @@ int32_t xmem::revStride16Read_Word64(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_128
-int32_t xmem::revStride16Read_Word128(void* start_address, void* end_address) { 
+int32_t xmem::revStride16Read_Word128(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_revStride16Read_Word128(static_cast<Word128_t*>(end_address), static_cast<Word128_t*>(start_address));
 #else
-    register Word128_t val; 
+    register Word128_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word128_t);
     for (volatile Word128_t* wordptr = static_cast<Word128_t*>(end_address); i < len; i += 16) {
@@ -3446,11 +3446,11 @@ int32_t xmem::revStride16Read_Word128(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_256
-int32_t xmem::revStride16Read_Word256(void* start_address, void* end_address) { 
+int32_t xmem::revStride16Read_Word256(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_revStride16Read_Word256(static_cast<Word256_t*>(end_address), static_cast<Word256_t*>(start_address));
 #else
-    register Word256_t val; 
+    register Word256_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word256_t);
     for (volatile Word256_t* wordptr = static_cast<Word256_t*>(end_address); i < len; i += 8) {
@@ -3468,13 +3468,13 @@ int32_t xmem::revStride16Read_Word256(void* start_address, void* end_address) {
 int32_t xmem::revStride16Read_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::revStride16Read_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::revStride16Read_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_revStride16Read_Word512(static_cast<Word512_t*>(end_address), static_cast<Word512_t*>(start_address));
     #error 512-bit words are not supported on Windows.
 #else
-    register Word512_t val; 
+    register Word512_t val;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word512_t);
     //for (volatile Word512_t* wordptr = static_cast<Word512_t*>(end_address); i < len; i += 4) {
@@ -3492,7 +3492,7 @@ int32_t __attribute__((optimize("O0"))) xmem::revStride16Read_Word512(void* star
 /* ------------ STRIDE 16 WRITE --------------*/
 
 int32_t xmem::forwStride16Write_Word32(void* start_address, void* end_address) {
-    register Word32_t val = 0xFFFFFFFF; 
+    register Word32_t val = 0xFFFFFFFF;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word32_t);
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(start_address); i < len; i += 64) {
@@ -3505,7 +3505,7 @@ int32_t xmem::forwStride16Write_Word32(void* start_address, void* end_address) {
 
 #ifdef HAS_WORD_64
 int32_t xmem::forwStride16Write_Word64(void* start_address, void* end_address) {
-    register Word64_t val = 0xFFFFFFFFFFFFFFFF; 
+    register Word64_t val = 0xFFFFFFFFFFFFFFFF;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word64_t);
     for (volatile Word64_t* wordptr = static_cast<Word64_t*>(start_address); i < len; i += 32) {
@@ -3518,12 +3518,12 @@ int32_t xmem::forwStride16Write_Word64(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_128
-int32_t xmem::forwStride16Write_Word128(void* start_address, void* end_address) { 
+int32_t xmem::forwStride16Write_Word128(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_forwStride16Write_Word128(static_cast<Word128_t*>(start_address), static_cast<Word128_t*>(end_address));
 #else
     register Word128_t val;
-    val = my_64b_set_128b_word(0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF); 
+    val = my_64b_set_128b_word(0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF);
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word128_t);
     for (volatile Word128_t* wordptr = static_cast<Word128_t*>(start_address); i < len; i += 16) {
@@ -3537,12 +3537,12 @@ int32_t xmem::forwStride16Write_Word128(void* start_address, void* end_address) 
 #endif
 
 #ifdef HAS_WORD_256
-int32_t xmem::forwStride16Write_Word256(void* start_address, void* end_address) { 
+int32_t xmem::forwStride16Write_Word256(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_forwStride16Write_Word256(static_cast<Word256_t*>(start_address), static_cast<Word256_t*>(end_address));
 #else
     register Word256_t val;
-    val = my_64b_set_256b_word(0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF); 
+    val = my_64b_set_256b_word(0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF);
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word256_t);
     for (volatile Word256_t* wordptr = static_cast<Word256_t*>(start_address); i < len; i += 8) {
@@ -3560,7 +3560,7 @@ int32_t xmem::forwStride16Write_Word256(void* start_address, void* end_address) 
 int32_t xmem::forwStride16Write_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::forwStride16Write_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::forwStride16Write_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_forwStride16Write_Word512(static_cast<Word512_t*>(start_address), static_cast<Word512_t*>(end_address));
@@ -3568,7 +3568,7 @@ int32_t __attribute__((optimize("O0"))) xmem::forwStride16Write_Word512(void* st
 #else
     register Word512_t val;
     uint64_t scratchptr[8] __attribute__ ((aligned(512)));
-    my_64b_set_512b_word(val, scratchptr, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF); 
+    my_64b_set_512b_word(val, scratchptr, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF);
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word512_t);
     for (Word512_t* wordptr = static_cast<Word512_t*>(start_address); i < len; i += 4) {
@@ -3581,8 +3581,8 @@ int32_t __attribute__((optimize("O0"))) xmem::forwStride16Write_Word512(void* st
 }
 #endif
 
-int32_t xmem::revStride16Write_Word32(void* start_address, void* end_address) { 
-    register Word32_t val = 0xFFFFFFFF; 
+int32_t xmem::revStride16Write_Word32(void* start_address, void* end_address) {
+    register Word32_t val = 0xFFFFFFFF;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word32_t);
     for (volatile Word32_t* wordptr = static_cast<Word32_t*>(end_address); i < len; i += 64) {
@@ -3595,8 +3595,8 @@ int32_t xmem::revStride16Write_Word32(void* start_address, void* end_address) {
 }
 
 #ifdef HAS_WORD_64
-int32_t xmem::revStride16Write_Word64(void* start_address, void* end_address) { 
-    register Word64_t val = 0xFFFFFFFFFFFFFFFF; 
+int32_t xmem::revStride16Write_Word64(void* start_address, void* end_address) {
+    register Word64_t val = 0xFFFFFFFFFFFFFFFF;
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word64_t);
     for (volatile Word64_t* wordptr = static_cast<Word64_t*>(end_address); i < len; i += 32) {
@@ -3610,12 +3610,12 @@ int32_t xmem::revStride16Write_Word64(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_128
-int32_t xmem::revStride16Write_Word128(void* start_address, void* end_address) { 
+int32_t xmem::revStride16Write_Word128(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_revStride16Write_Word128(static_cast<Word128_t*>(end_address), static_cast<Word128_t*>(start_address));
 #else
     register Word128_t val;
-    val = my_64b_set_128b_word(0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF); 
+    val = my_64b_set_128b_word(0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF);
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word128_t);
     for (volatile Word128_t* wordptr = static_cast<Word128_t*>(end_address); i < len; i += 16) {
@@ -3630,12 +3630,12 @@ int32_t xmem::revStride16Write_Word128(void* start_address, void* end_address) {
 #endif
 
 #ifdef HAS_WORD_256
-int32_t xmem::revStride16Write_Word256(void* start_address, void* end_address) { 
+int32_t xmem::revStride16Write_Word256(void* start_address, void* end_address) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return win_x86_64_asm_revStride16Write_Word256(static_cast<Word256_t*>(end_address), static_cast<Word256_t*>(start_address));
 #else
     register Word256_t val;
-    val = my_64b_set_256b_word(0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF); 
+    val = my_64b_set_256b_word(0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF);
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word256_t);
     for (volatile Word256_t* wordptr = static_cast<Word256_t*>(end_address); i < len; i += 8) {
@@ -3654,7 +3654,7 @@ int32_t xmem::revStride16Write_Word256(void* start_address, void* end_address) {
 int32_t xmem::revStride16Write_Word512(void* start_address, void* end_address) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::revStride16Write_Word512(void* start_address, void* end_address) { 
+int32_t __attribute__((optimize("O0"))) xmem::revStride16Write_Word512(void* start_address, void* end_address) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     //return win_x86_64_asm_revStride16Write_Word512(static_cast<Word512_t*>(end_address), static_cast<Word512_t*>(start_address));
@@ -3662,7 +3662,7 @@ int32_t __attribute__((optimize("O0"))) xmem::revStride16Write_Word512(void* sta
 #else
     register Word512_t val;
     uint64_t scratchptr[8] __attribute__ ((aligned(512)));
-    my_64b_set_512b_word(val, scratchptr, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF); 
+    my_64b_set_512b_word(val, scratchptr, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF);
     register uint32_t i = 0;
     register uint32_t len = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(end_address)-reinterpret_cast<uintptr_t>(start_address)) / sizeof(Word512_t);
     for (Word512_t* wordptr = static_cast<Word512_t*>(end_address); i < len; i += 4) {
@@ -3679,7 +3679,7 @@ int32_t __attribute__((optimize("O0"))) xmem::revStride16Write_Word512(void* sta
 /* ------------ RANDOM READ --------------*/
 
 #ifndef HAS_WORD_64 //special case: 32-bit machine
-int32_t xmem::randomRead_Word32(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len) {
+int32_t xmem::randomRead_Word32(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len, uint8_t mlp) {
     volatile uintptr_t* p = first_address;
 
     UNROLL1024(p = reinterpret_cast<uintptr_t*>(*p);)
@@ -3689,7 +3689,7 @@ int32_t xmem::randomRead_Word32(uintptr_t* first_address, uintptr_t** last_touch
 #endif
 
 #ifdef HAS_WORD_64
-int32_t xmem::randomRead_Word64(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len) {
+int32_t xmem::randomRead_Word64(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len, uint8_t mlp) {
     volatile uintptr_t* p = first_address;
 
     UNROLL512(p = reinterpret_cast<uintptr_t*>(*p);)
@@ -3699,7 +3699,7 @@ int32_t xmem::randomRead_Word64(uintptr_t* first_address, uintptr_t** last_touch
 #endif
 
 #ifdef HAS_WORD_128
-int32_t xmem::randomRead_Word128(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len) {
+int32_t xmem::randomRead_Word128(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len, uint8_t mlp) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return 0; //TODO: Implement for Windows.
 #else
@@ -3719,7 +3719,7 @@ int32_t xmem::randomRead_Word128(uintptr_t* first_address, uintptr_t** last_touc
 #endif
 
 #ifdef HAS_WORD_256
-int32_t xmem::randomRead_Word256(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len) {
+int32_t xmem::randomRead_Word256(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len, uint8_t mlp) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return 0; //TODO: Implement for Windows.
 #else
@@ -3740,10 +3740,10 @@ int32_t xmem::randomRead_Word256(uintptr_t* first_address, uintptr_t** last_touc
 
 #ifdef HAS_WORD_512
 #ifdef _WIN32
-int32_t xmem::randomRead_Word512(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len) {
+int32_t xmem::randomRead_Word512(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len, uint8_t mlp) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::randomRead_Word512(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len) {
+int32_t __attribute__((optimize("O0"))) xmem::randomRead_Word512(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len, uint8_t mlp) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     #error 512-bit words are not supported on Windows.
@@ -3766,7 +3766,7 @@ int32_t __attribute__((optimize("O0"))) xmem::randomRead_Word512(uintptr_t* firs
 /* ------------ RANDOM WRITE --------------*/
 
 #ifndef HAS_WORD_64 //special case: 32-bit machine
-int32_t xmem::randomWrite_Word32(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len) {
+int32_t xmem::randomWrite_Word32(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len, uint8_t mlp) {
     volatile uintptr_t* p = first_address;
     volatile uintptr_t* p2 = NULL;
 
@@ -3777,7 +3777,7 @@ int32_t xmem::randomWrite_Word32(uintptr_t* first_address, uintptr_t** last_touc
 #endif
 
 #ifdef HAS_WORD_64
-int32_t xmem::randomWrite_Word64(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len) {
+int32_t xmem::randomWrite_Word64(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len, uint8_t mlp) {
     volatile uintptr_t* p = first_address;
     volatile uintptr_t* p2 = NULL;
 
@@ -3788,7 +3788,7 @@ int32_t xmem::randomWrite_Word64(uintptr_t* first_address, uintptr_t** last_touc
 #endif
 
 #ifdef HAS_WORD_128
-int32_t xmem::randomWrite_Word128(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len) {
+int32_t xmem::randomWrite_Word128(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len, uint8_t mlp) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return 0; //TODO: Implement for Windows.
 #else
@@ -3808,7 +3808,7 @@ int32_t xmem::randomWrite_Word128(uintptr_t* first_address, uintptr_t** last_tou
 #endif
 
 #ifdef HAS_WORD_256
-int32_t xmem::randomWrite_Word256(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len) {
+int32_t xmem::randomWrite_Word256(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len, uint8_t mlp) {
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
     return 0; //TODO: Implement for Windows.
 #else
@@ -3829,10 +3829,10 @@ int32_t xmem::randomWrite_Word256(uintptr_t* first_address, uintptr_t** last_tou
 
 #ifdef HAS_WORD_512
 #ifdef _WIN32
-int32_t xmem::randomWrite_Word512(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len) {
+int32_t xmem::randomWrite_Word512(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len, uint8_t mlp) {
 #else
 //FIXME: We flag GCC/ICC not to optimize this function. The problem is that my_512b_load() -- which maps to _mm512_load_epi64 Intel AVX-512/KNC intrinsic -- cannot accept volatile* arguments. The only way to prevent the entire benchmark loop from being optimized away is to force the compiler not to optimize the function at all. Unfortunately, this will cause extra unwanted code to be included. The only solution seems to be to write inline assembly or allow eventual support for assignment of __m512i variables, e.g., val = *wordptr++; which is how the code for the other word sizes is written.
-int32_t __attribute__((optimize("O0"))) xmem::randomWrite_Word512(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len) {
+int32_t __attribute__((optimize("O0"))) xmem::randomWrite_Word512(uintptr_t* first_address, uintptr_t** last_touched_address, size_t len, uint8_t mlp) {
 #endif
 #if defined(_WIN32) && defined(ARCH_INTEL_X86_64)
 #error 512-bit words are not supported on Windows.
