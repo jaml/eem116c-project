@@ -394,8 +394,9 @@ bool LatencyBenchmark::runCore() {
 
         //Compute latency metric
         uint32_t lat_passes = workers[0]->getPasses();
-        tick_t lat_adjusted_ticks = workers[0]->getAdjustedTicks();
-        tick_t lat_elapsed_dummy_ticks = workers[0]->getElapsedDummyTicks();
+        // With <MLP> number of chains, take average.
+        tick_t lat_adjusted_ticks = (workers[0]->getAdjustedTicks() / mlp_ );
+        tick_t lat_elapsed_dummy_ticks = (workers[0]->getElapsedDummyTicks() / mlp_);
         uint32_t lat_bytes_per_pass = workers[0]->getBytesPerPass();
         uint32_t lat_accesses_per_pass = lat_bytes_per_pass / 8;
         iterwarning |= workers[0]->hadWarning();
