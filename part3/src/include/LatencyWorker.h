@@ -1,7 +1,7 @@
 /* The MIT License (MIT)
  *
  * Copyright (c) 2014 Microsoft
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -25,7 +25,7 @@
 
 /**
  * @file
- * 
+ *
  * @brief Header file for the LatencyWorker class.
  */
 
@@ -38,13 +38,13 @@
 #include <common.h>
 
 namespace xmem {
-    /** 
+    /**
      * @brief Multithreading-friendly class to do memory loading.
      */
     class LatencyWorker : public MemoryWorker {
         public:
-            
-            /** 
+
+            /**
              * @brief Constructor for sequential-access patterns.
              * @param mem_array Pointer to the memory region to use by this worker.
              * @param len Length of the memory region to use by this worker.
@@ -55,11 +55,12 @@ namespace xmem {
             LatencyWorker(
                 void* mem_array,
                 size_t len,
+                uint8_t mlp,
                 RandomFunction kernel_fptr,
                 RandomFunction kernel_dummy_fptr,
                 int32_t cpu_affinity
             );
-            
+
             /**
              * @brief Destructor.
              */

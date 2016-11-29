@@ -78,6 +78,7 @@ ThroughputBenchmark::ThroughputBenchmark(
 
 bool ThroughputBenchmark::runCore() {
     size_t len_per_thread = len_ / num_worker_threads_; //Carve up memory space so each worker has its own area to play in
+    uint8_t mlp = mlp_;
 
     //Set up kernel function pointers
     SequentialFunction kernel_fptr_seq = NULL;
@@ -139,12 +140,14 @@ bool ThroughputBenchmark::runCore() {
             if (pattern_mode_ == SEQUENTIAL)
                 workers.push_back(new LoadWorker(threadmem_array_,
                                                  len_per_thread,
+                                                 mlp,
                                                  kernel_fptr_seq,
                                                  kernel_dummy_fptr_seq,
                                                  cpu_id));
             else if (pattern_mode_ == RANDOM)
                 workers.push_back(new LoadWorker(threadmem_array_,
                                                  len_per_thread,
+                                                 mlp,
                                                  kernel_fptr_ran,
                                                  kernel_dummy_fptr_ran,
                                                  cpu_id));

@@ -319,6 +319,7 @@ namespace xmem {
         chunk_size_t chunk_size_; /**< Chunk size of memory accesses in this benchmark. */
         int32_t stride_size_; /**< Stride size in chunks for sequential pattern mode only. */
 
+        // MLP
         uint8_t mlp_;
 
         //Power measurement

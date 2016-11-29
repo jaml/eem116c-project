@@ -723,7 +723,7 @@ bool BenchmarkManager::buildBenchmarks() {
                                                                             RANDOM,
                                                                             rw,
                                                                             chunk,
-                                                                            0,
+                                                                            0, //stride
                                                                             mlp,
                                                                             dram_power_readers_,
                                                                             benchmark_name));
@@ -774,6 +774,7 @@ bool BenchmarkManager::runExtDelayInjectedLoadedLatencyBenchmark() {
     //Build benchmarks
     for (auto mem_node_it = memory_numa_node_affinities_.cbegin(); mem_node_it != memory_numa_node_affinities_.cend(); mem_node_it++) { //iterate each memory NUMA node
         uint32_t mem_node = *mem_node_it;
+        int8_t mlp = config_.getMlp();
 
         void* mem_array = mem_arrays_[mem_node];
         size_t mem_array_len = mem_array_lens_[mem_node];
@@ -788,8 +789,6 @@ bool BenchmarkManager::runExtDelayInjectedLoadedLatencyBenchmark() {
                 while (d <= 1024) { //Iterate different delay values
 
                     std::string benchmark_name = static_cast<std::ostringstream*>(&(std::ostringstream() << "Test #" << g_test_index++ << "E" << EXT_NUM_DELAY_INJECTED_LOADED_LATENCY_BENCHMARK << " (Extension: Delay-Injected Loaded Latency)"))->str();
-
-                    uint8_t mlp = config_.getMlp();
 
                     del_lat_benchmarks.push_back(new DelayInjectedLoadedLatencyBenchmark(mem_array,
                                                                              mem_array_len,

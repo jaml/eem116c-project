@@ -97,6 +97,7 @@ uint32_t DelayInjectedLoadedLatencyBenchmark::getDelay() const {
 
 bool DelayInjectedLoadedLatencyBenchmark::runCore() {
     size_t len_per_thread = len_ / num_worker_threads_; //Carve up memory space so each worker has its own area to play in
+    uint8_t mlp = mlp_; //TODOJ: may need to define mlp_
 
     //Set up latency measurement kernel function pointers
     RandomFunction lat_kernel_fptr = &chasePointers;
@@ -387,12 +388,14 @@ bool DelayInjectedLoadedLatencyBenchmark::runCore() {
             if (t == 0) { //special case: thread 0 is always latency thread
                 workers.push_back(new LatencyWorker(threadmem_array_,
                                                     len_per_thread,
+                                                    mlp,
                                                     lat_kernel_fptr,
                                                     lat_kernel_dummy_fptr,
                                                     cpu_id));
             } else {
                 workers.push_back(new LoadWorker(threadmem_array_,
                                                  len_per_thread,
+                                                 mlp,
                                                  load_kernel_fptr,
                                                  load_kernel_dummy_fptr,
                                                  cpu_id));

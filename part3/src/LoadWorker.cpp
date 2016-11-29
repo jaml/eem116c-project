@@ -51,6 +51,7 @@ using namespace xmem;
 LoadWorker::LoadWorker(
         void* mem_array,
         size_t len,
+        uint8_t mlp,
         SequentialFunction kernel_fptr,
         SequentialFunction kernel_dummy_fptr,
         int32_t cpu_affinity
@@ -58,8 +59,10 @@ LoadWorker::LoadWorker(
         MemoryWorker(
             mem_array,
             len,
+            mlp,
             cpu_affinity
         ),
+        //mlp_(mlp), //TODOJ: maybe this?
         use_sequential_kernel_fptr_(true),
         kernel_fptr_seq_(kernel_fptr),
         kernel_dummy_fptr_seq_(kernel_dummy_fptr),
@@ -71,6 +74,7 @@ LoadWorker::LoadWorker(
 LoadWorker::LoadWorker(
         void* mem_array,
         size_t len,
+        uint8_t mlp,
         RandomFunction kernel_fptr,
         RandomFunction kernel_dummy_fptr,
         int32_t cpu_affinity
@@ -78,6 +82,7 @@ LoadWorker::LoadWorker(
         MemoryWorker(
             mem_array,
             len,
+            mlp,
             cpu_affinity
         ),
         use_sequential_kernel_fptr_(false),
@@ -116,12 +121,13 @@ void LoadWorker::run() {
     tick_t target_ticks = g_ticks_per_ms * BENCHMARK_DURATION_MS; //Rough target run duration in ticks
     uint32_t p = 0;
     bytes_per_pass = THROUGHPUT_BENCHMARK_BYTES_PER_PASS;
-    uint8_t mlp = 1;  //TODOJ: This might be wrong! Putting 1 here for now.
+    uint8_t mlp = 1;  //TODOJ: pretty sure this hardcoded one is wrong! may have to set to mlp_, and then uncomment mlp_ in constructor (line 65)
 
     //Grab relevant setup state thread-safely and keep it local
     if (acquireLock(-1)) {
         mem_array = mem_array_;
         len = len_;
+        mlp = mlp_;
         cpu_affinity = cpu_affinity_;
         use_sequential_kernel_fptr = use_sequential_kernel_fptr_;
         kernel_fptr_seq = kernel_fptr_seq_;

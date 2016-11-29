@@ -269,6 +269,8 @@ bool LatencyBenchmark::runCore() {
     RandomFunction lat_kernel_fptr = &chasePointers;
     RandomFunction lat_kernel_dummy_fptr = &dummy_chasePointers;
 
+    uint8_t mlp = getMlp();
+
     //Initialize memory regions for all threads by writing to them, causing the memory to be physically resident.
     forwSequentialWrite_Word32(mem_array_,
                                reinterpret_cast<void*>(reinterpret_cast<uint8_t*>(mem_array_)+len_)); //static casts to silence compiler warnings
@@ -349,6 +351,7 @@ bool LatencyBenchmark::runCore() {
             if (t == 0) { //special case: thread 0 is always latency thread
                 workers.push_back(new LatencyWorker(thread_mem_array,
                                                     len_per_thread,
+                                                    mlp,
                                                     lat_kernel_fptr,
                                                     lat_kernel_dummy_fptr,
                                                     cpu_id));
@@ -356,12 +359,14 @@ bool LatencyBenchmark::runCore() {
                 if (pattern_mode_ == SEQUENTIAL)
                     workers.push_back(new LoadWorker(thread_mem_array,
                                                      len_per_thread,
+                                                     mlp,
                                                      load_kernel_fptr_seq,
                                                      load_kernel_dummy_fptr_seq,
                                                      cpu_id));
                 else if (pattern_mode_ == RANDOM)
                     workers.push_back(new LoadWorker(thread_mem_array,
                                                      len_per_thread,
+                                                     mlp,
                                                      load_kernel_fptr_ran,
                                                      load_kernel_dummy_fptr_ran,
                                                      cpu_id));

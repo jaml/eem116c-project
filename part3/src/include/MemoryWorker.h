@@ -1,7 +1,7 @@
 /* The MIT License (MIT)
  *
  * Copyright (c) 2014 Microsoft
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -25,7 +25,7 @@
 
 /**
  * @file
- * 
+ *
  * @brief Header file for the MemoryWorker class.
  */
 
@@ -40,13 +40,13 @@
 #include <cstdint>
 
 namespace xmem {
-    /** 
+    /**
      * @brief Multithreading-friendly class to run memory access kernels.
      */
     class MemoryWorker : public Runnable {
         public:
-            
-            /** 
+
+            /**
              * @brief Constructor.
              * @param mem_array Pointer to the memory region to use by this worker.
              * @param len Length of the memory region to use by this worker.
@@ -55,9 +55,10 @@ namespace xmem {
             MemoryWorker(
                 void* mem_array,
                 size_t len,
+                uint8_t mlp,
                 int32_t cpu_affinity
             );
-            
+
             /**
              * @brief Destructor.
              */
@@ -67,12 +68,14 @@ namespace xmem {
              * @brief Thread-safe worker method.
              */
             virtual void run() = 0;
-        
+
             /**
              * @brief Gets the length of the memory region used by this worker.
              * @returns Length of memory region in bytes.
              */
             size_t getLen();
+
+            uint8_t getMlp();
 
             /**
              * @brief Gets the number of bytes used in each pass of the benchmark by this worker.
@@ -114,6 +117,7 @@ namespace xmem {
             // ONLY ACCESS OBJECT VARIABLES UNDER THE RUNNABLE OBJECT LOCK!!!!
             void* mem_array_; /**< The memory region for this worker. */
             size_t len_; /**< The length of the memory region for this worker. */
+            uint8_t mlp_;
             int32_t cpu_affinity_; /**< The logical CPU affinity for this worker. */
             uint32_t bytes_per_pass_; /**< Number of bytes accessed in each kernel pass. */
             uint32_t passes_; /**< Number of passes. */

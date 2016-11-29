@@ -1,7 +1,7 @@
 /* The MIT License (MIT)
  *
  * Copyright (c) 2014 Microsoft
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -25,7 +25,7 @@
 
 /**
  * @file
- * 
+ *
  * @brief Implementation file for the MemoryWorker class.
  */
 
@@ -38,10 +38,12 @@ using namespace xmem;
 MemoryWorker::MemoryWorker(
         void* mem_array,
         size_t len,
+        uint8_t mlp,
         int32_t cpu_affinity
     ) :
         mem_array_(mem_array),
         len_(len),
+        mlp_(mlp),
         cpu_affinity_(cpu_affinity),
         bytes_per_pass_(0),
         passes_(0),
@@ -66,6 +68,10 @@ size_t MemoryWorker::getLen() {
     return retval;
 }
 
+uint8_t MemoryWorker::getMlp() {
+    return mlp_;
+}
+
 uint32_t MemoryWorker::getBytesPerPass() {
     uint32_t retval = 0;
     if (acquireLock(-1)) {
@@ -85,7 +91,7 @@ uint32_t MemoryWorker::getPasses() {
 
     return retval;
 }
-                
+
 tick_t MemoryWorker::getElapsedTicks() {
     tick_t retval = 0;
     if (acquireLock(-1)) {

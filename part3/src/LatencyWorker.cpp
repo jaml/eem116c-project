@@ -51,6 +51,7 @@ using namespace xmem;
 LatencyWorker::LatencyWorker(
         void* mem_array,
         size_t len,
+        uint8_t mlp,
         RandomFunction kernel_fptr,
         RandomFunction kernel_dummy_fptr,
         int32_t cpu_affinity
@@ -58,6 +59,7 @@ LatencyWorker::LatencyWorker(
         MemoryWorker(
             mem_array,
             len,
+            mlp,
             cpu_affinity
         ),
         kernel_fptr_(kernel_fptr),
@@ -86,11 +88,13 @@ void LatencyWorker::run() {
     void* mem_array = NULL;
     size_t len = 0;
     tick_t target_ticks = g_ticks_per_ms * BENCHMARK_DURATION_MS; //Rough target run duration in ticks
+    uint8_t mlp = 1; //TODOJ: this might be wrong
 
     //Grab relevant setup state thread-safely and keep it local
     if (acquireLock(-1)) {
         mem_array = mem_array_;
         len = len_;
+        uint8_t mlp = mlp_; //TODOJ: not sure if this is right
         bytes_per_pass = LATENCY_BENCHMARK_UNROLL_LENGTH * 8;
         cpu_affinity = cpu_affinity_;
         kernel_fptr = kernel_fptr_;
@@ -126,7 +130,7 @@ void LatencyWorker::run() {
     next_address = static_cast<uintptr_t*>(mem_array);
     while (elapsed_ticks < target_ticks) {
         start_tick = start_timer();
-        UNROLL256((*kernel_fptr)(next_address, &next_address, 0, 1);)  //TODOJ: I only temp. set mlp (last arg) to 1. May need to change this.
+        UNROLL256((*kernel_fptr)(next_address, &next_address, 0, mlp);)  //TODOJ: I only temp. set mlp (last arg) to 1. May need to change this.
         stop_tick = stop_timer();
         elapsed_ticks += (stop_tick - start_tick);
         passes+=256;
@@ -136,7 +140,7 @@ void LatencyWorker::run() {
     next_address = static_cast<uintptr_t*>(mem_array);
     while (p < passes) {
         start_tick = start_timer();
-        UNROLL256((*kernel_dummy_fptr)(next_address, &next_address, 0, 1);) //TODOJ: I only temp. set mlp (last arg) to 1. May need to change this.
+        UNROLL256((*kernel_dummy_fptr)(next_address, &next_address, 0, mlp);) //TODOJ: I only temp. set mlp (last arg) to 1. May need to change this.
         stop_tick = stop_timer();
         elapsed_dummy_ticks += (stop_tick - start_tick);
         p+=256;
