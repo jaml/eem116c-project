@@ -14,11 +14,18 @@ for((i=1; i<=3; i++)); do
 done
 
 # merge run 1 results
+# for chunk 64
 head -1 part2q2_c64_stride1_run1.csv > part2q2_c64_run1_merged.csv
 for filename in $(ls part2q2_c64_stride*_run1.csv); do sed 1d $filename >> part2q2_c64_run1_merged.csv; done
-head -1 part2q2_c32_stride1_run1.csv > part2q2_c32_run1_merged.csv
-for filename in $(ls part2q2_c32_stride*_run1.csv); do sed 1d $filename >> part2q2_c32_run1_merged.csv; done
+#note: run1 gave bad results for chunk 32
+#head -1 part2q2_c32_stride1_run1.csv > part2q2_c32_run1_merged.csv
+#for filename in $(ls part2q2_c32_stride*_run1.csv); do sed 1d $filename >> part2q2_c32_run1_merged.csv; done
+# try run2
+head -1 part2q2_c32_stride1_run2.csv > part2q2_c32_run2_merged.csv
+for filename in $(ls part2q2_c32_stride*_run2.csv); do sed 1d $filename >> part2q2_c32_run2_merged.csv; done
 
+
+# This ended up being messy to plot. Left it out.
 # merge all chunk size 64 run results
 #head -1 part2q2_c64_stride1_run1.csv > part2q2_c64_3runs_merged.csv
 #for filename in $(ls part2q2_c64_stride*_run?.csv); do sed 1d $filename >> part2q2_c64_3runs_merged.csv; done
