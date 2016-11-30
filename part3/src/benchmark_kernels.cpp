@@ -1000,13 +1000,16 @@ int32_t xmem::chasePointers(uintptr_t* first_address, uintptr_t** last_touched_a
     //int segsz = (int)seg_sz;
     //std::cout << "int segsize is "<<segsz<<std::endl;
 
+    int segsize = (len / sizeof(uintptr_t));
+
     //std::cout<<"link sz is "<<seg_sz<<std::endl; //TODOJ: deleteme. segfaults after 3 calls to chasePointers() when mlp=2
 
     // TODOJ: No idea if we did this correctly... Do we need to change UNROLL512 to another #?
     // What about accounting for rand() collisions?
     if (mlp == 2) {
-        volatile uintptr_t* p0 = first_address + (std::rand() % (len / sizeof(uintptr_t)));  //uintptr_sz)); //segsz); // rand is in range of 0 to seg_sz
-        volatile uintptr_t* p1 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
+        // Set <MLP> number of pointers to point to random locations in the chain, and pointer-chase.
+        volatile uintptr_t* p0 = first_address + (std::rand() % segsize); // rand is in range of 0 to segsz
+        volatile uintptr_t* p1 = first_address + (std::rand() % segsize);
             // (hopefully rand() doesn't generate the same random # for both - though that may be unlikely)
  //TODOJ: For some reason, anything below UNROLL1024 segfaults on my VM, which I am pretty sure is x64. ????
         UNROLL1024( p0 = reinterpret_cast<uintptr_t*>(*p0);
@@ -1014,7 +1017,7 @@ int32_t xmem::chasePointers(uintptr_t* first_address, uintptr_t** last_touched_a
                     //p0 = p1;
                 )
 
-    // UNROLL1024(p2 = reinterpret_cast<uintptr_t*>(*p); *p = reinterpret_cast<uintptr_t>(p2); p = p2;)
+     //UNROLL1024(p2 = reinterpret_cast<uintptr_t*>(*p); *p = reinterpret_cast<uintptr_t>(p2); p = p2;)
 
         // syntax from above:
         //    UNROLL256(val = *p; *p = val; p = reinterpret_cast<Word128_t*>(my_64b_extractLSB_128b(val));)
@@ -1028,10 +1031,10 @@ int32_t xmem::chasePointers(uintptr_t* first_address, uintptr_t** last_touched_a
     }
 
     else if (mlp == 4) {
-        volatile uintptr_t* p0 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p1 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p2 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p3 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
+        volatile uintptr_t* p0 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p1 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p2 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p3 = first_address + (std::rand() % segsize);
             // (hopefully rand() doesn't generate the same random # for both - though that may be unlikely)
         //TODOJ: Do we halve UNROLL with increasing MLP? What about uneven one like 6?
         UNROLL1024( p0 = reinterpret_cast<uintptr_t*>(*p0);
@@ -1044,12 +1047,12 @@ int32_t xmem::chasePointers(uintptr_t* first_address, uintptr_t** last_touched_a
         //*last_touched_address = const_cast<uintptr_t*>(p0);
     }
     else if (mlp == 6) {
-        volatile uintptr_t* p0 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p1 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p2 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p3 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p4 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p5 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
+        volatile uintptr_t* p0 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p1 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p2 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p3 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p4 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p5 = first_address + (std::rand() % segsize);
             // (hopefully rand() doesn't generate the same random # for both - though that may be unlikely)
         UNROLL1024( p0 = reinterpret_cast<uintptr_t*>(*p0);
                     p1 = reinterpret_cast<uintptr_t*>(*p1);
@@ -1063,14 +1066,14 @@ int32_t xmem::chasePointers(uintptr_t* first_address, uintptr_t** last_touched_a
         //*last_touched_address = const_cast<uintptr_t*>(p0);
     }
     else if (mlp == 8) {
-        volatile uintptr_t* p0 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p1 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p2 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p3 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p4 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p5 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p6 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p7 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
+        volatile uintptr_t* p0 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p1 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p2 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p3 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p4 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p5 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p6 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p7 = first_address + (std::rand() % segsize);
             // (hopefully rand() doesn't generate the same random # for both - though that may be unlikely)
         UNROLL1024( p0 = reinterpret_cast<uintptr_t*>(*p0);
                     p1 = reinterpret_cast<uintptr_t*>(*p1);
@@ -1086,22 +1089,22 @@ int32_t xmem::chasePointers(uintptr_t* first_address, uintptr_t** last_touched_a
         //*last_touched_address = const_cast<uintptr_t*>(p0);
     }
     else if (mlp == 16) {
-        volatile uintptr_t* p0 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p1 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p2 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p3 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p4 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p5 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p6 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p7 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p8 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p9 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p10 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p11 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p12 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p13 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p14 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p15 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
+        volatile uintptr_t* p0 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p1 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p2 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p3 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p4 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p5 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p6 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p7 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p8 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p9 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p10 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p11 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p12 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p13 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p14 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p15 = first_address + (std::rand() % segsize);
             // (hopefully rand() doesn't generate the same random # for both - though that may be unlikely)
         UNROLL1024( p0 = reinterpret_cast<uintptr_t*>(*p0);
                     p1 = reinterpret_cast<uintptr_t*>(*p1);
@@ -1125,38 +1128,38 @@ int32_t xmem::chasePointers(uintptr_t* first_address, uintptr_t** last_touched_a
         //*last_touched_address = const_cast<uintptr_t*>(p0);
     }
     else if (mlp == 32) {
-        volatile uintptr_t* p0 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p1 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p2 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p3 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p4 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p5 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p6 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p7 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p8 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p9 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p10 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p11 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p12 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p13 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p14 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p15 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p16 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p17 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p18 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p19 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p20 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p21 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p22 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p23 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p24 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p25 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p26 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p27 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p28 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p29 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p30 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
-        volatile uintptr_t* p31 = first_address + (std::rand() % (len / sizeof(uintptr_t)));
+        volatile uintptr_t* p0 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p1 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p2 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p3 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p4 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p5 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p6 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p7 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p8 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p9 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p10 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p11 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p12 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p13 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p14 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p15 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p16 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p17 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p18 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p19 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p20 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p21 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p22 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p23 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p24 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p25 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p26 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p27 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p28 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p29 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p30 = first_address + (std::rand() % segsize);
+        volatile uintptr_t* p31 = first_address + (std::rand() % segsize);
             // (hopefully rand() doesn't generate the same random # for both - though that may be unlikely)
         UNROLL1024( p0 = reinterpret_cast<uintptr_t*>(*p0);
                     p1 = reinterpret_cast<uintptr_t*>(*p1);
