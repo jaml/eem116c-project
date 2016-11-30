@@ -1,0 +1,135 @@
+------------------------------------------------------------------------------------------
+Extensible Memory Benchmarking Tool (X-Mem) v2.4.2 for GNU/Linux on Intel x86-64
+Build date: Fri Nov 18 10:55:37 PST 2016
+Indicated compiler(s): GNU C/C++ (gcc/g++) 
+(C) Microsoft Corporation 2015
+Originally authored by Mark Gottscho <mgottscho@ucla.edu>
+------------------------------------------------------------------------------------------
+
+
+Verbose output enabled!
+Benchmarking modes:
+---> Unloaded latency
+
+Benchmark settings:
+---> Random access:                   no
+---> Sequential access:               yes
+---> Use memory reads:                yes
+---> Use memory writes:               yes
+---> Chunk sizes:                     64 
+---> Stride sizes:                    1 
+---> Number of worker threads:        1
+---> NUMA enabled:                    yes
+------> CPU NUMA node affinities:     0 
+------> Memory NUMA node affinities:  0 
+---> Large pages:                     no
+---> Iterations:                      1
+---> Starting test index:             1
+
+Working set per thread:               8388608 B == 8192 KB == 8 MB (2048 pages)
+
+This binary was built for the following OS and architecture capabilities: 
+GNU/Linux
+ARCH_INTEL
+ARCH_INTEL_X86_64
+ARCH_INTEL_SSE
+ARCH_INTEL_SSE2
+ARCH_AMD64
+ARCH_64BIT
+HAS_NUMA
+HAS_LARGE_PAGES
+HAS_WORD_64
+
+This binary was built with the following compile-time options:
+USE_OS_TIMER
+USE_POSIX_TIMER
+THROUGHPUT_BENCHMARK_BYTES_PER_PASS == 4096
+EXT_DELAY_INJECTED_LOADED_LATENCY_BENCHMARK
+
+
+These are the system type sizes:
+short:                   2
+int:                     4
+long:                    8
+long long:               8
+
+unsigned short:          2
+unsigned:                4
+unsigned long:           8
+unsigned long long:      8
+
+int8_t:                  1
+int16_t:                 2
+int32_t:                 4
+int64_t:                 8
+
+uint8_t:                 1
+uint16_t:                2
+uint32_t:                4
+uint64_t:                8
+
+Word32_t:                4
+Word64_t:                8
+
+void*:                   8
+uintptr_t:               8
+size_t:                  8
+
+Number of NUMA nodes: 1
+Number of physical processor packages: 1
+Number of physical processor cores: 0?
+Number of logical processor cores: 1
+Number of processor L1/L2/L3/L4 caches: 0?/0?/1/0? (guesses)
+Regular page size: 4096 B
+Large page size: 2097152 B
+
+Testing thread affinities...
+Locking to logical CPU 0...Pass      Unlocking...Pass
+
+Initializing timer...done
+Calculated timer frequency: 1000036000 Hz == 1000.04 MHz
+Derived timer ns per tick: 0.999964
+
+
+Virtual address for memory on NUMA node 0:
+0x00007FF8BED11000 --- ALIGNED --> 0x00007FF8BED11000
+
+Generating benchmarks.
+
+
+-------- Running Benchmark: Test #1L (Latency) ----------
+CPU NUMA Node: 0
+Memory NUMA Node: 0
+Latency measurement chunk size: 64-bit
+Latency measurement access pattern: random read (pointer-chasing)
+
+Preparing a memory region under test. This might take a while...done
+
+Starting power measurement threads...done
+Running benchmark.
+
+Iter 1 had 173312 latency measurement passes, with 512 accesses per pass:
+...lat clock ticks == 5004358037 (adjusted by -231490)
+...lat ns == 5.00418e+09 (adjusted by -231482)
+...lat sec == 5.00418 (adjusted by -0.000231482)
+
+Stopping power measurement threads...done
+
+*** RESULTS***
+
+Iter #   0:    56.394 ns/access @    0.000 MB/s mean self-imposed load
+
+
+Mean: 56.3942 ns/access and 0 MB/s mean imposed load (not necessarily matched)
+Min: 56.3942 ns/access
+25th Percentile: 56.3942 ns/access
+Median: 56.3942 ns/access
+75th Percentile: 56.3942 ns/access
+95th Percentile: 56.3942 ns/access
+99th Percentile: 56.3942 ns/access
+Max: 56.3942 ns/access
+Mode: 56.3942 ns/access
+
+
+
+Done running latency benchmarks.
