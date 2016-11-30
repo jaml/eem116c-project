@@ -1,0 +1,34 @@
+------------------------------------------------------------------------------------------
+Extensible Memory Benchmarking Tool (X-Mem) v2.4.2 for GNU/Linux on Intel x86-64
+Build date: Tue Nov 29 21:30:49 PST 2016
+Indicated compiler(s): GNU C/C++ (gcc/g++) 
+(C) Microsoft Corporation 2015
+Originally authored by Mark Gottscho <mgottscho@ucla.edu>
+------------------------------------------------------------------------------------------
+
+
+Working set per thread:               4096 B == 4 KB == 0 MB (1 pages)
+
+-------- Running Benchmark: Test #1L (Latency) ----------
+CPU NUMA Node: 0
+Memory NUMA Node: 0
+Latency measurement chunk size: 64-bit
+Latency measurement access pattern: random read (pointer-chasing)
+
+
+*** RESULTS***
+
+Iter #   0:    1.357 ns/access @    0.000 MB/s mean self-imposed load
+
+
+Mean: 1.35697 ns/access and 0 MB/s mean imposed load (not necessarily matched)
+Min: 1.35697 ns/access
+25th Percentile: 1.35697 ns/access
+Median: 1.35697 ns/access
+75th Percentile: 1.35697 ns/access
+95th Percentile: 1.35697 ns/access
+99th Percentile: 1.35697 ns/access
+Max: 1.35697 ns/access
+Mode: 1.35697 ns/access
+
+
